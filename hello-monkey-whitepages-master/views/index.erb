@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>White Pages CallerId</title>
+    <script type="text/javascript"
+      src="//static.twilio.com/libs/twiliojs/1.2/twilio.min.js"></script>
+    <script type="text/javascript"
+      src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
+
+    <link href="css/client.css"
+      type="text/css" rel="stylesheet" />
+    <style>
+
+    </style> 
+
+
+
+    <script type="text/javascript">
+  
+    var globalConn; //stores live connection
+    var globalName; //stores name  
+    Twilio.Device.setup("<%= token %>", {debug: true});
+  
+      Twilio.Device.ready(function (device) {
+        $("#log").text("Ready");
+      });
+  
+      Twilio.Device.error(function (error) {
+        $("#log").text("Error: " + error.message);
+      });
+  
+      Twilio.Device.connect(function (conn) {
+        $("#log").text("On call with: " + globalName);
+      });
+  
+      Twilio.Device.disconnect(function (conn) {
+        $("#log").text("Call ended");
+        $(".script-template-container").hide();
+
+      });
+
+      Twilio.Device.cancel(function (conn) {
+        $("#log").text("Call missed");
+        $(".script-template-container").hide();
+      });
+  
+      Twilio.Device.incoming(function (conn) {
+        // set the globalConn
+        $("#log").text("Getting name from Whitepages...");
+        globalConn = conn;
+        // fetch caller name from Whitepages API
+        $.post("getname", {callerId: conn.parameters.From}, function (data) {
+            data = jQuery.parseJSON(data);
+            globalName = data.name;
+            $("#log").text("Call from: " + data.name);
+            //$(".script-template-container").loadTemplate($("#template"), data);
+
+            showCaller(data);
+
+            $("<li>", {id: conn.Id, text: data.name}).click(function () {
+                showCaller(data);
+             }).prependTo("#people");
+        });
+      });
+
+      function showCaller (data) {
+
+            var source   = $("#template").html();
+            var template = Handlebars.compile(source);
+            var context = data;
+            var html    = template(context);
+            $(".script-template-container").html(html);
+            $(".script-template-container").show();
+            $("#calllog").click( function() {
+                $(".script-template-container").hide();
+            }); 
+
+      }
+
+      function hideCaller () {
+          $(".script-template-container").hide();
+      }
+
+  
+      function answer() {
+        // answer the call
+        globalConn.accept();
+      }
+  
+      function hangup() {
+        Twilio.Device.disconnectAll();
+      }
+
+      function addcaller() {
+      }
+
+    </script>
+  </head>
+  <body>
+  
+    <div class="logos">
+      <div id="twilio"><img src="images/twilio-logo-2100x650.png" width="175px"></img></div>  
+      <div id="whitepages"><img src="//pro.whitepages.com/wp-content/uploads/2014/09/wp-logo-large.png" width="300px"></img></div>
+    </div>
+    <div class="phone">For demo call: <%=caller_id%></div>  
+
+
+    <button class="call" onclick="answer();">
+      Answer
+    </button>
+
+    <button class="hangup" onclick="hangup();">
+      Hangup
+    </button>
+
+    <div id="log">Starting up....</div>
+    
+
+    <div class="script-template-container">     </div>
+    
+    <script type="text/x-handlebars-template" id="template">
+      <div class='caller_profile'>
+        <div class="caller_profile_vcard vcard" style="background-image:url('//maps.googleapis.com/maps/api/staticmap?zoom=12&size=450x165&sensor=false&center={{city}},{{state}}.png')">
+         <div class="caller_profile_text">
+          <p><label class="caller_profile_label">Number:</label>   <span class="fn editable" id="profile_edit_name">{{number}}</span></p> 
+           <p><label class="caller_profile_label">Name:</label>   <span class="fn editable" id="profile_edit_name">{{name}}</span></p>
+           <p><label class="caller_profile_label">Phone:</label>   <span class="fn editable" id="profile_edit_name">{{phonetype}}</span></p>
+           <p><label class="caller_profile_label">Spam%:</label>   <span class="fn editable" id="profile_edit_name">{{spamscore}}</span></p>
+           <p><label class="caller_profile_label">Carrier:</label>   <span class="fn editable" id="profile_edit_name" >{{carrier}}</span></p>
+           <p><label class="caller_profile_label">Type:</label>   <span class="fn editable" id="profile_edit_name" >{{persontype}}</span></p>
+           <p><label class="caller_profile_label">Address:</label>   <span class="fn editable" id="profile_edit_name" >{{address}}</span></p>
+           <p><label class="caller_profile_label">City:</label>   <span class="fn editable" id="profile_edit_name">{{city}}</span></p>
+           <p><label class="caller_profile_label">Zip:</label>   <span class="fn editable" id="profile_edit_name">{{postal_code}}</span></p>
+         </div>
+        </div>
+      </div>  
+      </script>
+     
+
+    </script>
+    <div id="calllog" onclick="hideCaller();">
+      <title>Call Log</title>
+    </div>
+    <ul id="people"/>
+     
+   
+  
+  </body>
+</html>
