@@ -4,15 +4,15 @@ require 'twilio-ruby'
 require 'httparty'
 
 disable :protection
- 
+
 # put your default Twilio Client name here, for when a phone number isn't given
-default_client = "charles"
+default_client = "hales"
 # Add a Twilio phone number or number verified with Twilio as the caller ID
 caller_id   = ENV['twilio_caller_id']
 account_sid = ENV['twilio_account_sid']
 auth_token  = ENV['twilio_auth_token']
 appsid      = ENV['twilio_app_id']
-api_key     = ENV['whitepages_api_key']  
+api_key     = ENV['whitepages_api_key']
 
 get '/' do
     client_name = params[:client]
@@ -27,12 +27,12 @@ get '/' do
     token = capability.generate
     erb :index, :locals => {:token => token, :client_name => client_name, :caller_id=> caller_id}
 end
- 
 
- 
+
+
 post '/dial' do
     #determine if call is inbound
-    number = params[:PhoneNumber] 
+    number = params[:PhoneNumber]
 
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
@@ -54,7 +54,7 @@ end
 #for inbound calls, dial the default_client
 post '/inbound' do
 
-    from = params[:From] 
+    from = params[:From]
 
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
@@ -73,10 +73,10 @@ end
 
 
 def getnamefromwhitepages (phone, api_key)
-   
+
    base_uri = "http://proapi.whitepages.com/"
-   version = "2.0/" 
-   
+   version = "2.0/"
+
 
 
    #the whitepagesobject will be returned with availible info.. bare minimum phone
@@ -94,37 +94,37 @@ def getnamefromwhitepages (phone, api_key)
     :lattitude => "",
     :longitude=> "",
     :state=> "",
-    :spamscore=> "" }
+    :repscore=> "" }
 
   request_url = base_uri + version + "phone.json?phone="+ phone  +"&api_key="+api_key
   response = HTTParty.get(URI.escape(request_url))
 
   result = response['results'][0] #get the first result assume it alsway a phone
-  
-  if result 
+
+  if result
     dictionarykeyphone = response['dictionary'][result]
     whitepagesobject[:phonetype] = dictionarykeyphone['line_type']
     whitepagesobject[:carrier]   = dictionarykeyphone['carrier']
-    whitepagesobject[:spamscore]  = dictionarykeyphone['reputation']['spam_score'] 
+    whitepagesobject[:repscore]  = dictionarykeyphone['reputation']['level']
 
     if dictionarykeyphone['belongs_to'][0]
 
-      whitepagesobject[:persontype]= dictionarykeyphone['belongs_to'][0]['id']['type'] 
+      whitepagesobject[:persontype]= dictionarykeyphone['belongs_to'][0]['id']['type']
 
       belongstoKey = dictionarykeyphone['belongs_to'][0]['id']['key']
       puts "belongstoKey = #{belongstoKey}"
-      
-      belongstoObject = response['dictionary'][belongstoKey]  #retrieve 
+
+      belongstoObject = response['dictionary'][belongstoKey]  #retrieve
       if belongstoObject
-        if whitepagesobject[:persontype] == "Person"          
+        if whitepagesobject[:persontype] == "Person"
           whitepagesobject[:firstname] = belongstoObject['names'][0]['first_name']  #TODO: This can error if there is no first_name
           whitepagesobject[:lastname]  = belongstoObject['names'][0]['last_name']
-          whitepagesobject[:name] = "#{whitepagesobject[:firstname]} #{whitepagesobject[:lastname]}" 
+          whitepagesobject[:name] = "#{whitepagesobject[:firstname]} #{whitepagesobject[:lastname]}"
         elsif whitepagesobject[:persontype] == "Business"
           whitepagesobject[:name]  = belongstoObject['name']
         end
 
-      end  
+      end
 
     end
 
@@ -139,10 +139,9 @@ def getnamefromwhitepages (phone, api_key)
       whitepagesobject[:postal_code] = locationObject['postal_code']
       whitepagesobject[:lattitude] = locationObject['lat_long']['latitude']
       whitepagesobject[:longitude] = locationObject['lat_long']['longitude']
-    end  
+    end
 
   end
   return whitepagesobject.to_json
 
-end 
-
+end
