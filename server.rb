@@ -8,11 +8,11 @@ disable :protection
 # put your default Twilio Client name here, for when a phone number isn't given
 default_client = "hales"
 # Add a Twilio phone number or number verified with Twilio as the caller ID
-caller_id   = ENV['twilio_caller_id']
-account_sid = ENV['twilio_account_sid']
-auth_token  = ENV['twilio_auth_token']
-appsid      = ENV['twilio_app_id']
-api_key     = ENV['whitepages_api_key']
+caller_id   = '18447009029' #ENV['twilio_caller_id']
+account_sid = 'AC3568011c5b1ea77994ed50387219eb8e' #ENV['twilio_account_sid']
+auth_token  = '7e3416e57e8aa7437e8f192d8c822ee0' #ENV['twilio_auth_token']
+appsid      = 'APcb1860769148402be75b173806b777dd' #ENV['twilio_app_id']
+api_key     = '76a12eda22c06e1428a069f8b7feedfc' #ENV['whitepages_api_key']
 
 get '/' do
     client_name = params[:client]
