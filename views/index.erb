@@ -127,13 +127,13 @@
 
     <script type="text/x-handlebars-template" id="template">
       <div class='caller_profile'>
-        <div class="caller_profile_vcard vcard"><img src="images/black-background.png" width="165px"></img>
+        <div class="caller_profile_vcard vcard" style="background-image:url('//maps.googleapis.com/maps/api/staticmap?zoom=12&size=600x300&sensor=false&center={{city}},{{state}}.png')">
          <div class="caller_profile_text">
           <p><label class="caller_profile_label">Number:</label>   <span class="fn editable" id="profile_edit_name">{{number}}</span></p>
            <p><label class="caller_profile_label">Name:</label>   <span class="fn editable" id="profile_edit_name">{{name}}</span></p>
            <p><label class="caller_profile_label">LineType:</label>   <span class="fn editable" id="profile_edit_name">{{phonetype}}</span></p>
-           <p><label class="caller_profile_label">RepScore:</label>   <span class="fn editable" id="profile_edit_name">{{repscore}}</span></p>
            <p><label class="caller_profile_label">Carrier:</label>   <span class="fn editable" id="profile_edit_name" >{{carrier}}</span></p>
+           <p><label class="caller_profile_label">RepLevel:</label>   <span class="fn editable" id="profile_edit_name">{{replevel}}</span></p>
            <p><label class="caller_profile_label">Type:</label>   <span class="fn editable" id="profile_edit_name" >{{persontype}}</span></p>
            <p><label class="caller_profile_label">Address:</label>   <span class="fn editable" id="profile_edit_name" >{{address}}</span></p>
            <p><label class="caller_profile_label">City:</label>   <span class="fn editable" id="profile_edit_name">{{city}}</span></p>
