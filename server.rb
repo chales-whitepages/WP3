@@ -77,8 +77,6 @@ def getnamefromwhitepages (phone, api_key)
    base_uri = "http://proapi.whitepages.com/"
    version = "2.0/"
 
-
-
    #the whitepagesobject will be returned with availible info.. bare minimum phone
    whitepagesobject = {
     :number => phone,
@@ -133,7 +131,9 @@ def getnamefromwhitepages (phone, api_key)
     locationObject = response['dictionary'][locationKey]  #retrieve best location
 
     if locationObject
-      whitepagesobject[:address] = locationObject['address']
+      whitepagesobject[:addressLine1] = locationObject['standard_address_line1']
+      whitepagesobject[:addressLine2] = locationObject['standard_address_line2']
+      whitepagesobject[:address] = "#{whitepagesobject[:addressLine1]} #{whitepagesobject[:addressLine2]} #{}"
       whitepagesobject[:city] = locationObject['city']
       whitepagesobject[:state] = locationObject['state_code']
       whitepagesobject[:postal_code] = locationObject['postal_code']
