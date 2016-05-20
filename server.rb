@@ -135,7 +135,7 @@ def getnamefromwhitepages (phone, api_key)
       whitepagesobject[:addressLine2] = locationObject['standard_address_line2']
       whitepagesobject[:address] = "#{whitepagesobject[:addressLine1]} #{whitepagesobject[:addressLine2]} #{}"
       whitepagesobject[:city] = locationObject['city']
-      whitepagesobject[:state] = locationObject['state_code']
+      whitepagesobject[:state_code] = locationObject['state_code']
       whitepagesobject[:postal_code] = locationObject['postal_code']
       whitepagesobject[:lattitude] = locationObject['lat_long']['latitude']
       whitepagesobject[:longitude] = locationObject['lat_long']['longitude']
