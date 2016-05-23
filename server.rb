@@ -89,6 +89,8 @@ def getnamefromwhitepages (phone, api_key)
     :address  =>  "" ,
     :city     =>  "",
     :postal_code => "",
+    :agerangestart => "",
+    :agerangeend => ","
     :age_range => "",
     :gender => "",
     :lattitude => "",
@@ -120,7 +122,9 @@ def getnamefromwhitepages (phone, api_key)
           whitepagesobject[:firstname] = belongstoObject['names'][0]['first_name']  #TODO: This can error if there is no first_name
           whitepagesobject[:lastname]  = belongstoObject['names'][0]['last_name']
           whitepagesobject[:name] = "#{whitepagesobject[:firstname]} #{whitepagesobject[:lastname]}"
-          whitepagesobject[:agerange] = belongstoObject['age_range']
+          whitepagesobject[:agerangestart] = belongstoObject['age_range']['start']
+          whitepagesobject[:agerangeend] = belongtoObject['age_range']['end']
+          whitepagesobject[:age_range] = "#{whitepagesobject[:start]} #{whitepagesobject[:end]}"
           whitepagesobject[:gender] = belongstoObject['gender']
         elsif whitepagesobject[:persontype] == "Business"
           whitepagesobject[:name]  = belongstoObject['name']
@@ -137,7 +141,7 @@ def getnamefromwhitepages (phone, api_key)
     if locationObject
       whitepagesobject[:addressLine1] = locationObject['standard_address_line1']
       whitepagesobject[:addressLine2] = locationObject['standard_address_line2']
-      whitepagesobject[:address] = "#{whitepagesobject[:addressLine1]} #{whitepagesobject[:addressLine2]} #{}"
+      whitepagesobject[:address] = "#{whitepagesobject[:addressLine1]} #{whitepagesobject[:addressLine2]}"
       whitepagesobject[:city] = locationObject['city']
       whitepagesobject[:state_code] = locationObject['state_code']
       whitepagesobject[:postal_code] = locationObject['postal_code']
