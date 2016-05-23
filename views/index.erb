@@ -127,7 +127,11 @@
 
     <script type="text/x-handlebars-template" id="template">
       <div class='caller_profile'>
+<<<<<<< HEAD
+        <div class="caller_profile_vcard vcard" style="background-image:url('//maps.googleapis.com/maps/api/staticmap?zoom=12&size=800x450&sensor=false&center={{city}},{{state}}.png')">
+=======
         <div class="caller_profile_vcard vcard" style="background-image:url('//maps.googleapis.com/maps/api/staticmap?zoom=12&size=600x300&sensor=false&center={{city}},{{state_code}}.png')">
+>>>>>>> master
          <div class="caller_profile_text">
           <p><label class="caller_profile_label">Number:</label>   <span class="fn editable" id="profile_edit_name">{{number}}</span></p>
            <p><label class="caller_profile_label">Name:</label>   <span class="fn editable" id="profile_edit_name">{{name}}</span></p>
@@ -139,8 +143,6 @@
            <p><label class="caller_profile_label">City:</label>   <span class="fn editable" id="profile_edit_name">{{city}}</span></p>
            <p><label class="caller_profile_label">State:</label>   <span class="fn editable" id="profile_edit_name">{{state_code}}<span></p>
            <p><label class="caller_profile_label">Zip:</label>   <span class="fn editable" id="profile_edit_name">{{postal_code}}</span></p>
-           <p><label class="caller_profile_label">AgeRange:</label>   <span class="fn editable" id="profile_edit_name">{{age_range}}</span></p>
-           <p><label class="caller_profile_label">Gender:</label>   <span class="fn editable" id="profile_edit_name">{{gender}}</span></p>
          </div>
         </div>
       </div>
