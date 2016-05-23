@@ -99,7 +99,7 @@ body {
 
 .caller_profile_text {
   font-family: 'PT Sans', sans-serif;
-  font-size: 12;
+  font-size: x-large;
   overflow:hidden;
   color:#EDEDED;
   background:rgba(0,0,0,0.65);
@@ -120,7 +120,7 @@ body {
   }
 
 .caller_profile_text span {
-  margin:0 0 0 14px;
+  margin:0 0 0 50px;
   padding:3px 8px;
   }
 
@@ -137,7 +137,7 @@ body {
 
 .caller_profile {
   margin:25px auto 0 auto;
-  width:450px;
+  width:600px;
   -webkit-animation-name: fade-in;
   -webkit-animation-duration: 1s;
   -webkit-animation-timing-function: linear;
