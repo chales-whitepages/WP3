@@ -89,8 +89,6 @@ def getnamefromwhitepages (phone, api_key)
     :address  =>  "" ,
     :city     =>  "",
     :postal_code => "",
-    :age_range => "",
-    :gender => "",
     :lattitude => "",
     :longitude=> "",
     :state_code=> "",
@@ -120,10 +118,6 @@ def getnamefromwhitepages (phone, api_key)
           whitepagesobject[:firstname] = belongstoObject['names'][0]['first_name']  #TODO: This can error if there is no first_name
           whitepagesobject[:lastname]  = belongstoObject['names'][0]['last_name']
           whitepagesobject[:name] = "#{whitepagesobject[:firstname]} #{whitepagesobject[:lastname]}"
-          whitepagesobject[:arstart] = belongstoObject['age_range']['start']
-          whitepagesobject[:arend] = belongtoObject['age_range']['end']
-          whitepagesobject[:age_range] = "#{whitepagesobject[:arstart} #{whitepagesobject[:arend]}"
-          whitepagesobject[:gender] = belongstoObject['gender']
         elsif whitepagesobject[:persontype] == "Business"
           whitepagesobject[:name]  = belongstoObject['name']
         end
