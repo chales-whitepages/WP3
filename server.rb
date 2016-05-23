@@ -89,8 +89,6 @@ def getnamefromwhitepages (phone, api_key)
     :address  =>  "" ,
     :city     =>  "",
     :postal_code => "",
-    :age_range => "",
-    :gender => "",
     :lattitude => "",
     :longitude=> "",
     :state=> "",
