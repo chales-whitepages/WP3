@@ -86,6 +86,9 @@ def getnamefromwhitepages (phone, api_key)
     :persontype     => "",
     :phonetype  => "",
     :gender => "",
+    :agestart => 1,
+    :ageend => 1,
+    :agerange => "",
     :carrier  =>  "",
     :address  =>  "" ,
     :city     =>  "",
@@ -120,6 +123,9 @@ def getnamefromwhitepages (phone, api_key)
           whitepagesobject[:lastname]  = belongstoObject['names'][0]['last_name']
           whitepagesobject[:name] = "#{whitepagesobject[:firstname]} #{whitepagesobject[:lastname]}"
           whitepagesobject[:gender] = belongstoObject['gender']
+          whitepagesobject[:agestart] = belongstoObject['age_range']['start']
+          whitepagesobject[:ageend] = belongstoObject['age_range']['end']
+          whitepagesobject[:agerange] = "#{whitepagesobject[:agestart]} #{whitepagesobject[:ageend]}"
         elsif whitepagesobject[:persontype] == "Business"
           whitepagesobject[:name]  = belongstoObject['name']
         end
