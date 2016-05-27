@@ -68,18 +68,20 @@ end
 
 post '/getname' do
     callerId = params[:callerId]
-    name = getnamefromwhitepages(callerId, api_key)
+    addOnJson = params[:AddOns]
+    name = getnamefromwhitepages(callerId, addOnJson, api_key)
     return name
 end
 
 
-def getnamefromwhitepages (phone, api_key)
+def getnamefromwhitepages (phone, addOnJson, api_key)
 
    base_uri = "http://proapi.whitepages.com/"
    version = "2.0/"
 
    #the whitepagesobject will be returned with availible info.. bare minimum phone
    whitepagesobject = {
+    :addOnJson => addOnJson,
     :number => phone,
     :name => phone,
     :firstname => "",
