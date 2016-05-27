@@ -55,8 +55,8 @@ end
 post '/inbound' do
 
     from = params[:From]
-    addOnJson = params[:AddOns]
-    puts "Hello World"
+    addOnJson = params[:add_on]
+    puts "Hello World in Inbound"
     puts from
     puts addOnJson
     response = Twilio::TwiML::Response.new do |r|
@@ -69,7 +69,7 @@ post '/inbound' do
 end
 
 post '/getname' do
-    puts "Hello World"
+    puts "Hello World in GetName"
     callerId = params[:callerId]
     addOnJson = params[:AddOns]
     name = getnamefromwhitepages(callerId, addOnJson, api_key)
