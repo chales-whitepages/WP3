@@ -55,7 +55,8 @@ end
 post '/inbound' do
 
     from = params[:From]
-
+    addOnJson = params[:AddOns]
+    puts addOnJson
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => from do |d|
