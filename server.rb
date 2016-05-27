@@ -69,6 +69,7 @@ post '/inbound' do
 end
 
 post '/getname' do
+    puts "Hello World"
     callerId = params[:callerId]
     addOnJson = params[:AddOns]
     name = getnamefromwhitepages(callerId, addOnJson, api_key)
