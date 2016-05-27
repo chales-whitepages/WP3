@@ -55,10 +55,11 @@ end
 post '/inbound' do
 
     from = params[:From]
-    addOnJsonOption = params[:AddOns]
+    addOnJsonOption = params[:results]
     puts "Hello World in Inbound"
     puts from
     puts addOnJsonOption
+    puts "Complete Inbound"
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => from do |d|
