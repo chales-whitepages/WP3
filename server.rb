@@ -55,7 +55,7 @@ end
 post '/inbound' do
 
     from = params[:From]
-    addOnJson = params[:add_on]
+    addOnJson = params[:add_ons]
     puts "Hello World in Inbound"
     puts from
     puts addOnJson
