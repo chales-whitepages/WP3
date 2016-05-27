@@ -74,7 +74,7 @@ post '/getname' do
     callerId = params[:callerId]
     addOnJsonOption = params[:AddOns]
     puts addOnJsonOption
-    name = getnamefromwhitepages(callerId, addOnJson, api_key)
+    name = getnamefromwhitepages(callerId, addOnJsonOption, api_key)
     return name
 end
 
