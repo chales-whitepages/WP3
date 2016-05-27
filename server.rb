@@ -55,7 +55,7 @@ end
 post '/inbound' do
 
     from = params[:From]
-    addOnJsonOption = params[:results]
+    addOnJsonOption = params[:AddsOns]
     puts "Hello World in Inbound"
     puts from
     puts addOnJsonOption
@@ -72,7 +72,8 @@ end
 post '/getname' do
     puts "Hello World in GetName"
     callerId = params[:callerId]
-    addOnJson = params[:AddOns]
+    addOnJsonOption = params[:AddOns]
+    puts addOnJsonOption
     name = getnamefromwhitepages(callerId, addOnJson, api_key)
     return name
 end
