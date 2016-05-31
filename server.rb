@@ -2,6 +2,7 @@ require 'rubygems'
 require 'sinatra'
 require 'twilio-ruby'
 require 'httparty'
+require 'json'
 
 disable :protection
 
@@ -58,7 +59,7 @@ post '/inbound' do
     addOnJsonOption = params[:AddsOns]
     puts "Hello World in Inbound"
     puts from
-    puts addOnJsonOption
+    puts JSON.pretty_generate(addOnJsonOption)
     puts "Complete Inbound"
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
