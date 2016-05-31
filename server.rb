@@ -59,7 +59,8 @@ post '/inbound' do
     addOnJsonOption = params[:AddsOns]
     puts "Hello World in Inbound"
     puts from
-    puts JSON.pretty_generate(addOnJsonOption)
+    parsed = JSON.parse(addOnJsonOption)
+    puts parsed
     puts "Complete Inbound"
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
