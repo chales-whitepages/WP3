@@ -59,7 +59,8 @@ post '/inbound' do
     addOnJsonOption = params[:AddsOns]
     puts "Hello World in Inbound"
     puts from
-
+    parsed = JSON.parse(addOnJsonOption)
+    puts parsed['status']
     puts "Complete Inbound"
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
@@ -74,9 +75,8 @@ post '/getname' do
     puts "Hello World in GetName"
     callerId = params[:callerId]
     addOnJsonOption = params[:AddOns]
-    parsed = JSON.parse(addOnJsonOption)
-    puts parsed
-    puts "Hello World in GetName - Completed"
+
+    puts addOnJsonOption
     name = getnamefromwhitepages(callerId, addOnJsonOption, api_key)
     return name
 end
