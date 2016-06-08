@@ -56,7 +56,7 @@ end
 post '/inbound' do
 
     from = params[:From]
-    addOnJsonOption = params[:AddsOns]
+    addOnJsonOption = params[:AddOns]
     puts "Hello World in Inbound"
     puts from
     parsed = JSON.parse(addOnJsonOption)
