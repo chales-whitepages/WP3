@@ -56,10 +56,10 @@ end
 post '/inbound' do
 
     from = params[:From]
-    addOnJsonOption = params[:AddOns]
-    parsed = JSON.parse(addOnJsonOption)
-    puts parsed['status']
-    puts "Complete Inbound"
+    #addOnJsonOption = params[:AddOns]
+    #parsed = JSON.parse(addOnJsonOption)
+    #puts parsed['status']
+    #puts "Complete Inbound"
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => from do |d|
@@ -103,10 +103,10 @@ def getnamefromwhitepages (phone, addOnJson, api_key)
     :state_code=> "",
     :replevel=> "" }
 
-  request_url = base_uri + version + "phone.json?phone="+ phone  +"&api_key="+api_key
-  response = HTTParty.get(URI.escape(request_url))
+  #request_url = base_uri + version + "phone.json?phone="+ phone  +"&api_key="+api_key
+  #response = HTTParty.get(URI.escape(request_url))
 
-  result = addOnJson['results']['whitepages_pro_calller_id']['result']['results'][0] #get the first result assume it alsway a phone
+  result = addOnJson['results']['whitepages_pro_calller_id']['result']['results'][0]["0"] #get the first result assume it alsway a phone
 
   if result
     whitepagesobject[:phonetype] = result['line_type']
