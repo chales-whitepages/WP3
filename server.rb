@@ -110,6 +110,7 @@ def getnamefromwhitepages (phone, addOnJson, api_key)
 
   if result
     whitepagesobject[:phonetype] = result[0]['line_type']
+    puts result[0]['line_type']
     whitepagesobject[:carrier]   = result[0]['carrier']
     # whitepagesobject[:replevel]  = dictionarykeyphone['reputation']['level']
 
