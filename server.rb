@@ -90,7 +90,6 @@ def getnamefromwhitepages (phone, addOnJson, api_key)
 
    #the whitepagesobject will be returned with availible info.. bare minimum phone
    whitepagesobject = {
-    :addOnJson => addOnJson,
     :number => phone,
     :name => phone,
     :firstname => "",
@@ -109,7 +108,7 @@ def getnamefromwhitepages (phone, addOnJson, api_key)
   request_url = base_uri + version + "phone.json?phone="+ phone  +"&api_key="+api_key
   response = HTTParty.get(URI.escape(request_url))
 
-  result = response['results'][0] #get the first result assume it alsway a phone
+  result = addOnJson['results'][0] #get the first result assume it alsway a phone
 
   if result
     dictionarykeyphone = addOnJson['dictionary'][result]
