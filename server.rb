@@ -35,7 +35,6 @@ post '/dial' do
     #determine if call is inbound
     number = params[:PhoneNumber]
 
-    puts "Hello World in Dial"
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => caller_id do |d|
@@ -58,8 +57,6 @@ post '/inbound' do
 
     from = params[:From]
     addOnJsonOption = params[:AddOns]
-    puts "Hello World in Inbound"
-    puts from
     parsed = JSON.parse(addOnJsonOption)
     puts parsed['status']
     puts "Complete Inbound"
@@ -73,12 +70,13 @@ post '/inbound' do
 end
 
 post '/getname' do
-    puts "Hello World in GetName"
     callerId = params[:callerId]
     addOnJsonOption = params[:AddOns]
 
     puts addOnJsonOption
+    puts "Get Name Complete"
     name = getnamefromwhitepages(callerId, addOnJsonOption, api_key)
+    puts "Gather Info Complete"
     return name
 end
 
@@ -108,29 +106,28 @@ def getnamefromwhitepages (phone, addOnJson, api_key)
   request_url = base_uri + version + "phone.json?phone="+ phone  +"&api_key="+api_key
   response = HTTParty.get(URI.escape(request_url))
 
-  result = addOnJson['results'][0] #get the first result assume it alsway a phone
+  result = addOnJson['results']['whitepages_pro_calller_id']['result']['results'][0] #get the first result assume it alsway a phone
 
   if result
-    dictionarykeyphone = addOnJson['dictionary'][result]
-    whitepagesobject[:phonetype] = dictionarykeyphone['line_type']
-    whitepagesobject[:carrier]   = dictionarykeyphone['carrier']
-    whitepagesobject[:replevel]  = dictionarykeyphone['reputation']['level']
+    whitepagesobject[:phonetype] = result['line_type']
+    whitepagesobject[:carrier]   = result['carrier']
+    # whitepagesobject[:replevel]  = dictionarykeyphone['reputation']['level']
 
-    if dictionarykeyphone['belongs_to'][0]
+    if result['belongs_to'][0]
 
-      whitepagesobject[:persontype]= dictionarykeyphone['belongs_to'][0]['id']['type']
+      whitepagesobject[:persontype]= result['belongs_to'][0]['id']['type']
 
-      belongstoKey = dictionarykeyphone['belongs_to'][0]['id']['key']
+      belongstoKey = results['belongs_to'][0]['id']['key']
       puts "belongstoKey = #{belongstoKey}"
 
-      belongstoObject = response['dictionary'][belongstoKey]  #retrieve
+      # belongstoObject = response['dictionary'][belongstoKey]  #retrieve
       if belongstoObject
         if whitepagesobject[:persontype] == "Person"
-          whitepagesobject[:firstname] = belongstoObject['names'][0]['first_name']  #TODO: This can error if there is no first_name
-          whitepagesobject[:lastname]  = belongstoObject['names'][0]['last_name']
+          whitepagesobject[:firstname] = results['belong_to'][0]['names'][0]['first_name']  #TODO: This can error if there is no first_name
+          whitepagesobject[:lastname]  = results['belong_to'][0]['names'][0]['last_name']
           whitepagesobject[:name] = "#{whitepagesobject[:firstname]} #{whitepagesobject[:lastname]}"
         elsif whitepagesobject[:persontype] == "Business"
-          whitepagesobject[:name]  = belongstoObject['name']
+          whitepagesobject[:name]  = results['belong_to'][0]['name']
         end
 
       end
@@ -138,18 +135,18 @@ def getnamefromwhitepages (phone, addOnJson, api_key)
     end
 
 
-    locationKey = dictionarykeyphone['associated_locations'][0]['id']['key']
-    locationObject = response['dictionary'][locationKey]  #retrieve best location
+    locationKey = results['associated_locations'][0]['id']['key']
+    # locationObject = response['dictionary'][locationKey]  #retrieve best location
 
     if locationObject
-      whitepagesobject[:addressLine1] = locationObject['standard_address_line1']
-      whitepagesobject[:addressLine2] = locationObject['standard_address_line2']
+      whitepagesobject[:addressLine1] = results['associated_locations'][0]['standard_address_line1']
+      whitepagesobject[:addressLine2] = results['associated_locations'][0]['standard_address_line2']
       whitepagesobject[:address] = "#{whitepagesobject[:addressLine1]} #{whitepagesobject[:addressLine2]}"
-      whitepagesobject[:city] = locationObject['city']
-      whitepagesobject[:state_code] = locationObject['state_code']
-      whitepagesobject[:postal_code] = locationObject['postal_code']
-      whitepagesobject[:lattitude] = locationObject['lat_long']['latitude']
-      whitepagesobject[:longitude] = locationObject['lat_long']['longitude']
+      whitepagesobject[:city] = results['associated_locations'][0]['city']
+      whitepagesobject[:state_code] = results['associated_locations'][0]['state_code']
+      whitepagesobject[:postal_code] = results['associated_locations'][0]['postal_code']
+      whitepagesobject[:lattitude] = results['associated_locations'][0]['lat_long']['latitude']
+      whitepagesobject[:longitude] = results['associated_locations'][0]['lat_long']['longitude']
     end
 
   end
