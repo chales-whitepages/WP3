@@ -35,6 +35,7 @@ post '/dial' do
     #determine if call is inbound
     number = params[:PhoneNumber]
 
+    puts "Hello World in Dial"
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => caller_id do |d|
@@ -111,7 +112,7 @@ def getnamefromwhitepages (phone, addOnJson, api_key)
   result = response['results'][0] #get the first result assume it alsway a phone
 
   if result
-    dictionarykeyphone = response['dictionary'][result]
+    dictionarykeyphone = addOnJson['dictionary'][result]
     whitepagesobject[:phonetype] = dictionarykeyphone['line_type']
     whitepagesobject[:carrier]   = dictionarykeyphone['carrier']
     whitepagesobject[:replevel]  = dictionarykeyphone['reputation']['level']
