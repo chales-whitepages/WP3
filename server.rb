@@ -27,8 +27,6 @@ get '/' do
     erb :index, :locals => {:token => token, :client_name => client_name, :caller_id=> caller_id}
 end
 
-
-
 post '/dial' do
     #determine if call is inbound
     number = params[:PhoneNumber]
@@ -74,7 +72,7 @@ def getnamefromaddons(phone, account_sid, auth_token)
   puts "In Get Name"
   #lookup with twilio addons
   base_uri = "https://lookups.twilio.com/v1/PhoneNumbers/"
-  addons =  "?AddOns=whitepages_pro_caller_id&Type=caller-name&Type=carrier"
+  addons =  "?AddOns=whitepages_pro_caller_id"
   auth = {:username => account_sid, :password => auth_token}
   request_url = base_uri + phone + addons
 
@@ -85,7 +83,6 @@ def getnamefromaddons(phone, account_sid, auth_token)
   puts response
   firstname = " "
   lastname = " "
-
 
   #this unfortunate check
   if response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names']
@@ -101,10 +98,7 @@ def getnamefromaddons(phone, account_sid, auth_token)
 
   carrier = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
   line_type = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
-
-
   locations = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
-
 
   responseobject = {
     :number => phone,
