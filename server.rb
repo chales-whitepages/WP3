@@ -2,18 +2,17 @@ require 'rubygems'
 require 'sinatra'
 require 'twilio-ruby'
 require 'httparty'
-require 'json'
 
 disable :protection
 
 # put your default Twilio Client name here, for when a phone number isn't given
-default_client = "hales"
+default_client = "charles"
 # Add a Twilio phone number or number verified with Twilio as the caller ID
-caller_id   = '(844) 700-9029' #ENV['twilio_caller_id']
-account_sid = 'AC3568011c5b1ea77994ed50387219eb8e' #ENV['twilio_account_sid']
-auth_token  = '7e3416e57e8aa7437e8f192d8c822ee0' #ENV['twilio_auth_token']
-appsid      = 'APcb1860769148402be75b173806b777dd' #ENV['twilio_app_id']
-api_key     = '76a12eda22c06e1428a069f8b7feedfc' #ENV['whitepages_api_key']
+caller_id   = ENV['twilio_caller_id']
+account_sid = ENV['twilio_account_sid']
+auth_token  = ENV['twilio_auth_token']
+appsid      = ENV['twilio_app_id']
+
 
 get '/' do
     client_name = params[:client]
@@ -56,10 +55,7 @@ end
 post '/inbound' do
 
     from = params[:From]
-    #addOnJsonOption = params[:AddOns]
-    #parsed = JSON.parse(addOnJsonOption)
-    #puts parsed['status']
-    #puts "Complete Inbound"
+
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => from do |d|
@@ -71,86 +67,63 @@ end
 
 post '/getname' do
     callerId = params[:callerId]
-    addOnJsonOption = params[:AddOns]
-
-    puts addOnJsonOption
-    puts "Get Name Complete"
-    name = getnamefromwhitepages(callerId, addOnJsonOption, api_key)
-    puts "Gather Info Complete"
+    name = getnamefromaddons(callerId, account_sid, auth_token)
     return name
 end
 
+def getnamefromaddons(phone, account_sid, auth_token)
+  #lookup with twilio addons
+  base_uri = "https://lookups.twilio.com/v1/PhoneNumbers/"
+  addons =  "?AddOns=whitepages_pro_caller_identity&Type=caller-name&Type=carrier"
+  auth = {:username => account_sid, :password => auth_token}
+  request_url = base_uri +  phone + addons
 
-def getnamefromwhitepages (phone, addOnJson, api_key)
+  puts "request #{request_url}"
+  response = HTTParty.get(URI.escape(request_url), :basic_auth => auth)
 
-   base_uri = "http://proapi.whitepages.com/"
-   version = "2.0/"
-
-   #the whitepagesobject will be returned with availible info.. bare minimum phone
-   whitepagesobject = {
-    :number => phone,
-    :name => phone,
-    :firstname => "",
-    :lastname => "",
-    :persontype     => "",
-    :phonetype  => "",
-    :carrier  =>  "",
-    :address  =>  "" ,
-    :city     =>  "",
-    :postal_code => "",
-    :lattitude => "",
-    :longitude=> "",
-    :state_code=> "",
-    :replevel=> "" }
-
-  #request_url = base_uri + version + "phone.json?phone="+ phone  +"&api_key="+api_key
-  #response = HTTParty.get(URI.escape(request_url))
-
-  result = addOnJson['results']['whitepages_pro_calller_id']['result']['results'] #get the first result assume it alsway a phone
-
-  if result
-    whitepagesobject[:phonetype] = result[0]['line_type']
-    puts result[0]['line_type']
-    whitepagesobject[:carrier]   = result[0]['carrier']
-    # whitepagesobject[:replevel]  = dictionarykeyphone['reputation']['level']
-
-    if result['belongs_to'][0]
-
-      whitepagesobject[:persontype]= result[0]['belongs_to'][0]['id']['type']
-
-      belongstoKey = results[0]['belongs_to'][0]['id']['key']
-      puts "belongstoKey = #{belongstoKey}"
-
-      # belongstoObject = response['dictionary'][belongstoKey]  #retrieve
-      if belongstoObject
-        if whitepagesobject[:persontype] == "Person"
-          whitepagesobject[:firstname] = results[0]['belong_to'][0]['names'][0]['first_name']  #TODO: This can error if there is no first_name
-          whitepagesobject[:lastname]  = results[0]['belong_to'][0]['names'][0]['last_name']
-          whitepagesobject[:name] = "#{whitepagesobject[:firstname]} #{whitepagesobject[:lastname]}"
-        elsif whitepagesobject[:persontype] == "Business"
-          whitepagesobject[:name]  = results[0]['belong_to'][0]['name']
-        end
-
-      end
-
-    end
+  name = phone #default, if we don't find a name
+  puts response
+  firstname = " "
+  lastname = " "
 
 
-    locationKey = results[0]['associated_locations'][0]['id']['key']
-    # locationObject = response['dictionary'][locationKey]  #retrieve best location
-
-    if locationObject
-      whitepagesobject[:addressLine1] = results[0]['associated_locations'][0]['standard_address_line1']
-      whitepagesobject[:addressLine2] = results[0]['associated_locations'][0]['standard_address_line2']
-      whitepagesobject[:address] = "#{whitepagesobject[:addressLine1]} #{whitepagesobject[:addressLine2]}"
-      whitepagesobject[:city] = results[0]['associated_locations'][0]['city']
-      whitepagesobject[:state_code] = results[0]['associated_locations'][0]['state_code']
-      whitepagesobject[:postal_code] = results[0]['associated_locations'][0]['postal_code']
-      whitepagesobject[:lattitude] = results[0]['associated_locations'][0]['lat_long']['latitude']
-      whitepagesobject[:longitude] = results[0]['associated_locations'][0]['lat_long']['longitude']
-    end
-
+  #this unfortunate check
+  if response['add_ons']['results']['whitepages_pro_caller_identity']['result']['results'][0]['belongs_to'][0]['names']
+      puts "got a name"
+      firstname = response['add_ons']['results']['whitepages_pro_caller_identity']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
+      lastname =  response['add_ons']['results']['whitepages_pro_caller_identity']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
+      name = "#{firstname} #{lastname}"
   end
-  return whitepagesobject.to_json
+
+  if response['caller_name']['caller_name']
+      name = response['caller_name']['caller_name']
+  end
+
+  carrier = response['add_ons']['results']['whitepages_pro_caller_identity']['result']['results'][0]['carrier']
+  line_type = response['add_ons']['results']['whitepages_pro_caller_identity']['result']['results'][0]['line_type']
+
+
+  locations = response['add_ons']['results']['whitepages_pro_caller_identity']['result']['results'][0]['associated_locations'][0]
+
+
+  responseobject = {
+    :number => phone,
+    :phone => phone,
+    :name => name,
+    :firstname =>  firstname,
+    :lastname => lastname,
+    :persontype     => "",
+    :phonetype  => line_type,
+    :carrier  =>  carrier,
+    :address  =>  locations['standard_address_line1'] ,
+    :city     =>  locations['city'],
+    :postal_code => locations['postal_code'],
+    :lattitude => locations['lat_long']['latitude'],
+    :longitude=> locations['lat_long']['longitude'],
+    :state=> locations['state_code'],
+    :spamscore=> ""
+  }
+
+  return responseobject.to_json
 
 end

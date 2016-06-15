@@ -1,7 +1,7 @@
 body {
   text-align: center;
   margin: 0;
-  background: url() top center no-repeat, url(https://static0.twilio.com/packages/quickstart/whitey.png) center top repeat;
+  background: url() top center no-repeat, url(https://static0.twilio.com/bundles/quickstart/whitey.png) center top repeat;
 }
 
 #log {
@@ -97,12 +97,15 @@ body {
 
 
 
+    
+
+
 .caller_profile_text {
   font-family: 'PT Sans', sans-serif;
   font-size: 12;
   overflow:hidden;
   color:#EDEDED;
-  background:rgba(0,0,0,0.65);
+  background:rgba(0,0,0,0.5);
   border-radius:12px;
   border:1px solid rgba(0,0,0,.5);
   text-shadow: 1px 1px 0 rgba(0,0,0,.8);
@@ -112,7 +115,7 @@ body {
 
 .caller_profile_label {
   font-family: 'PT Sans', sans-serif;
-  width: 85px;
+  width: 60px;
   float: left;
   text-align: left;
   display: block;
@@ -123,16 +126,12 @@ body {
   margin:0 0 0 14px;
   padding:3px 8px;
   }
-
+  
 .caller_profile_vcard p {
   margin:0 0 10px;
   height:14px;
   text-align: left;
   border-radius:12px;
-  }
-
-  .caller_profile_vcard.vcard {
-    border-radius: 15px;
   }
 
 .caller_profile {
