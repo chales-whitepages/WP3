@@ -6,7 +6,7 @@ require 'httparty'
 disable :protection
 
 # put your default Twilio Client name here, for when a phone number isn't given
-default_client = "charles"
+default_client = "hales"
 # Add a Twilio phone number or number verified with Twilio as the caller ID
 caller_id   = '(844) 700-9029' #ENV['twilio_caller_id']
 account_sid = 'AC3568011c5b1ea77994ed50387219eb8e' #ENV['twilio_account_sid']
@@ -71,6 +71,7 @@ post '/getname' do
 end
 
 def getnamefromaddons(phone, account_sid, auth_token)
+  puts "In Get Name"
   #lookup with twilio addons
   base_uri = "https://lookups.twilio.com/v1/PhoneNumbers/"
   addons =  "?AddOns=whitepages_pro_caller_identity&Type=caller-name&Type=carrier"
