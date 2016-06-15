@@ -76,6 +76,24 @@ def getnamefromaddons(phone, account_sid, auth_token)
   auth = {:username => account_sid, :password => auth_token}
   request_url = base_uri + phone + addons
 
+  #the whitepagesobject will be returned with availible info.. bare minimum phone
+  whitepagesobject = {
+   :number => phone,
+   :name => phone,
+   :firstname => "",
+   :lastname => "",
+   :persontype     => "",
+   :phonetype  => "",
+   :carrier  =>  "",
+   :address  =>  "" ,
+   :city     =>  "",
+   :postal_code => "",
+   :lattitude => "",
+   :longitude=> "",
+   :state_code=> "",
+   :replevel=> "" }
+
+
   puts "request #{request_url}"
   response = HTTParty.get(URI.escape(request_url), :basic_auth => auth)
 
@@ -92,32 +110,27 @@ def getnamefromaddons(phone, account_sid, auth_token)
       name = "#{firstname} #{lastname}"
   end
 
-  if response['caller_name']['caller_name']
-      name = response['caller_name']['caller_name']
-  end
-
   carrier = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
   line_type = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
   locations = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
 
-  responseobject = {
-    :number => phone,
-    :phone => phone,
-    :name => name,
-    :firstname =>  firstname,
-    :lastname => lastname,
-    :persontype     => "",
-    :phonetype  => line_type,
-    :carrier  =>  carrier,
-    :address  =>  locations['standard_address_line1'] ,
-    :city     =>  locations['city'],
-    :postal_code => locations['postal_code'],
-    :lattitude => locations['lat_long']['latitude'],
-    :longitude=> locations['lat_long']['longitude'],
-    :state=> locations['state_code'],
-    :spamscore=> ""
+  whitepagesobject[:number] = phone,
+  whitepagesobject[:phone] = phone,
+  whitepagesobject[:name] = name,
+  whitepagesobject[:firstname] = firstname,
+  whitepagesobject[:lastname] = lastname,
+  whitepagesobject[:persontype] = "",
+  whitepagesobject[:phonetype] = line_type,
+  whitepagesobject[:carrier] = carrier,
+  whitepagesobject[:address] = locations['standard_address_line1'] ,
+  whitepagesobject[:city] = locations['city'],
+  whitepagesobject[:postal_code] = locations['postal_code'],
+  whitepagesobject[:lattitude] = locations['lat_long']['latitude'],
+  whitepagesobject[:longitude] = locations['lat_long']['longitude'],
+  whitepagesobject[:state] = locations['state_code'],
+  whitepagesobject[:replevel] = ""
   }
 
-  return responseobject.to_json
+  return whitepagesobject.to_json
 
 end
