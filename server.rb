@@ -74,9 +74,9 @@ def getnamefromaddons(phone, account_sid, auth_token)
   puts "In Get Name"
   #lookup with twilio addons
   base_uri = "https://lookups.twilio.com/v1/PhoneNumbers/"
-  addons =  "?AddOns=whitepages_pro_caller_identity&Type=caller-name&Type=carrier"
+  addons =  "?AddOns=whitepages_pro_caller_id&Type=caller-name&Type=carrier"
   auth = {:username => account_sid, :password => auth_token}
-  request_url = base_uri +  phone + addons
+  request_url = base_uri + phone + addons
 
   puts "request #{request_url}"
   response = HTTParty.get(URI.escape(request_url), :basic_auth => auth)
