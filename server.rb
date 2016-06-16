@@ -52,7 +52,7 @@ end
 post '/inbound' do
 
     from = params[:From]
-
+    addOn = params[:AddOns]
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => from do |d|
@@ -60,24 +60,26 @@ post '/inbound' do
         end
     end
     response.text
+    addOn = params[:AddOns]
 end
 
 post '/getname' do
     callerId = params[:callerId]
-    name = getnamefromaddons(callerId, account_sid, auth_token)
+    addOn = params[:AddOns]
+    name = getnamefromaddons(callerId, account_sid, auth_token, addOn)
     return name
 end
 
-def getnamefromaddons(phone, account_sid, auth_token)
+def getnamefromaddons(phone, account_sid, auth_token, jsonAddOn)
   puts "In Get Name"
   #lookup with twilio addons
-  base_uri = "https://lookups.twilio.com/v1/PhoneNumbers/"
-  addons =  "?AddOns=whitepages_pro_caller_id&Type=caller-name&Type=carrier"
-  auth = {:username => account_sid, :password => auth_token}
-  request_url = base_uri + phone + addons
+  #base_uri = "https://lookups.twilio.com/v1/PhoneNumbers/"
+  #addons =  "?AddOns=whitepages_pro_caller_id&Type=caller-name&Type=carrier"
+  #auth = {:username => account_sid, :password => auth_token}
+  #request_url = base_uri + phone + addons
 
-  puts "request #{request_url}"
-  response = HTTParty.get(URI.escape(request_url), :basic_auth => auth)
+  #puts "request #{request_url}"
+  #response = HTTParty.get(URI.escape(request_url), :basic_auth => auth)
 
   name = phone #default, if we don't find a name
   puts response
@@ -85,20 +87,20 @@ def getnamefromaddons(phone, account_sid, auth_token)
   lastname = " "
 
   #this unfortunate check
-  if response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names']
+  if jsonAddOn['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names']
       puts "got a name"
-      firstname = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
-      lastname =  response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
+      firstname = jsonAddOn['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
+      lastname =  jsonAddOn['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
       name = "#{firstname} #{lastname}"
   end
 
-  if response['caller_name']['caller_name']
-      name = response['caller_name']['caller_name']
-  end
+  #if response['caller_name']['caller_name']
+      #name = response['caller_name']['caller_name']
+  #end
 
-  carrier = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
-  line_type = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
-  locations = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
+  carrier = jsonAddOn['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
+  line_type = jsonAddOn['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
+  locations = jsonAddOn['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
 
   responseobject = {
     :number => phone,
