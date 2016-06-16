@@ -52,7 +52,7 @@ end
 post '/inbound' do
 
     from = params[:From]
-    addOn = params[:AddOns]
+
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => from do |d|
@@ -60,11 +60,12 @@ post '/inbound' do
         end
     end
     response.text
-    name = getnamefromaddons(addOn)
-    return name
 end
 
-#post '/getname' do
+post '/getname' do
+    addOn = params[:AddOns]
+    name = getnamefromaddons(addOn)
+    return name
     #callerId = params[:callerId]
     #name = getnamefromaddons(callerId, account_sid, auth_token, addOn)
     #return name
