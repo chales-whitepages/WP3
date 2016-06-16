@@ -60,18 +60,17 @@ post '/inbound' do
         end
     end
     response.text
-    addOn = params[:AddOns]
-end
-
-post '/getname' do
-    callerId = params[:callerId]
-    addOn = params[:AddOns]
-    name = getnamefromaddons(callerId, account_sid, auth_token, addOn)
+    name = getnamefromaddons(addOn)
     return name
 end
 
-def getnamefromaddons(phone, account_sid, auth_token, jsonAddOn)
-  puts "In Get Name"
+#post '/getname' do
+    #callerId = params[:callerId]
+    #name = getnamefromaddons(callerId, account_sid, auth_token, addOn)
+    #return name
+end
+
+def getnamefromaddons(jsonAddOn)
   #lookup with twilio addons
   #base_uri = "https://lookups.twilio.com/v1/PhoneNumbers/"
   #addons =  "?AddOns=whitepages_pro_caller_id&Type=caller-name&Type=carrier"
@@ -81,8 +80,7 @@ def getnamefromaddons(phone, account_sid, auth_token, jsonAddOn)
   #puts "request #{request_url}"
   #response = HTTParty.get(URI.escape(request_url), :basic_auth => auth)
 
-  name = phone #default, if we don't find a name
-  puts response
+  #default, if we don't find a name
   firstname = " "
   lastname = " "
 
@@ -97,7 +95,7 @@ def getnamefromaddons(phone, account_sid, auth_token, jsonAddOn)
   #if response['caller_name']['caller_name']
       #name = response['caller_name']['caller_name']
   #end
-
+  phone = jsonAddON['results']['whitepages_pro_caller_id']['result']['results'][0]['phone_number']
   carrier = jsonAddOn['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
   line_type = jsonAddOn['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
   locations = jsonAddOn['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
