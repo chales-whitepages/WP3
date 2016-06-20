@@ -53,8 +53,7 @@
         globalConn = conn;
         // fetch caller name from Whitepages API
         // $.post("getname", {AddOns: conn.parameters.From}, function (data) {
-            addOnData = conn.parameters.AddOns
-            data = jQuery.parseJSON(addOnData);
+            data = jQuery.parseJSON(conn.parameters.AddOns);
             globalName = data.name;
             $("#log").text("Call from: " + data.name);
             //$(".script-template-container").loadTemplate($("#template"), data);
