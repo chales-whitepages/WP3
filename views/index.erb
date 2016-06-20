@@ -52,7 +52,7 @@
         $("#log").text("Getting name from Twilio Add-ons...");
         globalConn = conn;
         // fetch caller name from Whitepages API
-        $.post("getname", {callerId: conn.parameters.From}, function (data) {
+        $.post("getname", {AddOns: conn.parameters.From}, function (data) {
             data = jQuery.parseJSON(data);
             globalName = data.name;
             $("#log").text("Call from: " + data.name);
