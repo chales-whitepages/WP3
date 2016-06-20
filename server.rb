@@ -53,8 +53,9 @@ post '/inbound' do
 
     from = params[:From]
     puts "In Inbound"
-    inboundAddOn = params[:AddOns]
-    puts inboundAddOn
+    if inboundAddOn = params[:AddOns]
+      puts "Got an addon"
+    end
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => from do |d|
