@@ -64,6 +64,7 @@ end
 
 post '/getname' do
     addOn = params[:AddOns]
+    puts addOn
     name = getnamefromaddons(addOn)
     return name
     #callerId = params[:callerId]
