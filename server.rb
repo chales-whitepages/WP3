@@ -17,7 +17,8 @@ appsid      = 'APcb1860769148402be75b173806b777dd' #ENV['twilio_app_id']
 pusher_client = Pusher::Client.new(
   app_id: '218565',
   key: '1cd7a808aea64c3bf98b',
-  secret: 'a2602555a66c0555c692'
+  secret: 'a2602555a66c0555c692',
+  encrypted: true
 )
 
 get '/' do
