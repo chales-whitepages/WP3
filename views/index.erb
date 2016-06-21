@@ -7,9 +7,11 @@
     <script type="text/javascript"
       src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
     </script>
+    <script type="text/javascript"
+      src="//js.pusher.com/3.1/pusher.min.js">
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
-    <script src="//js.pusher.com/3.1/pusher.min.js"></script>
 
     <link href="css/client.css"
       type="text/css" rel="stylesheet" />
@@ -20,6 +22,12 @@
 
 
     <script type="text/javascript">
+    Pusher.log = function(message) {
+    if (window.console &amp;&amp; window.console.log) {
+      window.console.log(message);
+      }
+    };
+
     Pusher.logToConsole = true;
     var globalConn; //stores live connection
     var globalName; //stores name
