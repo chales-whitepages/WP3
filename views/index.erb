@@ -23,27 +23,23 @@
 
     <script type="text/javascript">
     Pusher.log = function(message) {
-    if (window.console &amp;&amp; window.console.log) {
-      window.console.log(message);
-      }
+      console.log(message);
     };
 
     Pusher.logToConsole = true;
     var globalConn; //stores live connection
     var globalName; //stores name
 
-    // Sets up a Pusher obj / web socket
-    var pusher = new Pusher('1cd7a808aea64c3bf98b', {
-      encrypted: true
-    });
-
-    // Listens for server messages specifically the caller data
-    var channel = pusher.subscribe('test_channel');
-
     Twilio.Device.setup("<%= token %>", {debug: true});
 
       Twilio.Device.ready(function (device) {
         $("#log").text("Ready");
+            // Sets up a Pusher obj / web socket
+        var pusher = new Pusher('1cd7a808aea64c3bf98b', {
+          encrypted: true
+        });
+    // Listens for server messages specifically the caller data
+        var channel = pusher.subscribe('test_channel');
       });
 
       Twilio.Device.error(function (error) {
