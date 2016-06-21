@@ -48,6 +48,7 @@
       });
 
       Twilio.Device.incoming(function (conn) {
+        <%#
         // set the globalConn
         $("#log").text("Getting name from Twilio Add-ons...");
         globalConn = conn;
@@ -67,8 +68,8 @@
             $("<li>", {id: conn.Id, text: data.name}).click(function () {
                 showCaller(data);
             }).prependTo("#people");
-         });
-      });
+          }); %>
+        });
 
       function showCaller (data) {
 
