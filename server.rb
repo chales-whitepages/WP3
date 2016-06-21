@@ -2,6 +2,7 @@ require 'rubygems'
 require 'sinatra'
 require 'twilio-ruby'
 require 'httparty'
+require 'pusher'
 
 disable :protection
 
@@ -12,6 +13,12 @@ caller_id   = '(844) 700-9029' #ENV['twilio_caller_id']
 account_sid = 'AC3568011c5b1ea77994ed50387219eb8e' #ENV['twilio_account_sid']
 auth_token  = '7e3416e57e8aa7437e8f192d8c822ee0' #ENV['twilio_auth_token']
 appsid      = 'APcb1860769148402be75b173806b777dd' #ENV['twilio_app_id']
+
+pusher_client = Pusher::Client.new(
+  app_id: '218565'
+  key: '1cd7a808aea64c3bf98b'
+  secret: 'a2602555a66c0555c692'
+)
 
 get '/' do
     client_name = params[:client]
@@ -55,6 +62,7 @@ post '/inbound' do
     puts "In Inbound"
     inboundAddOn = params[:AddOns]
     puts inboundAddOn
+    Pusher.trigger('test_channel', 'data_transfer', {inboundAddOn})
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => from do |d|
