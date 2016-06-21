@@ -66,7 +66,7 @@ post '/inbound' do
     inboundAddOn = params[:AddOns]
     puts inboundAddOn
 
-    Pusher.trigger('test_channel', 'data_transfer', {:AddOn => inboundAddOn})
+    Pusher.trigger('twilio_channel', 'data_transfer', {:AddOn => inboundAddOn})
 
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID

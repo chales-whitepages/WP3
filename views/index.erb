@@ -34,12 +34,6 @@
 
       Twilio.Device.ready(function (device) {
         $("#log").text("Ready");
-            // Sets up a Pusher obj / web socket
-        var pusher = new Pusher('1cd7a808aea64c3bf98b', {
-          encrypted: true
-        });
-    // Listens for server messages specifically the caller data
-        var channel = pusher.subscribe('test_channel');
       });
 
       Twilio.Device.error(function (error) {
@@ -71,6 +65,12 @@
         // $.post("getname", {callerId: conn.parameters.From}, function (data) {
         // var objectAddOn = JSON && JSON.parse(conn.parameters.AddOns) || $.parseJSON(conn.parameters.AddOns);
         // console.log(objectAddOn);
+        // Sets up a Pusher obj / web socket
+        var pusher = new Pusher('1cd7a808aea64c3bf98b', {
+          encrypted: true
+        });
+        // Listens for server messages specifically the caller data
+        var channel = pusher.subscribe('twilio_channel');
         channel.bind('my_event', function(data) {
           alert(data.message);
           data = jQuery.parseJSON(data);
