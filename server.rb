@@ -14,7 +14,12 @@ account_sid = 'AC3568011c5b1ea77994ed50387219eb8e' #ENV['twilio_account_sid']
 auth_token  = '7e3416e57e8aa7437e8f192d8c822ee0' #ENV['twilio_auth_token']
 appsid      = 'APcb1860769148402be75b173806b777dd' #ENV['twilio_app_id']
 
-
+pusher_client = Pusher::Client.new(
+  app_id: '218565',
+  key: '1cd7a808aea64c3bf98b',
+  secret: 'a2602555a66c0555c692',
+  encrypted: true
+)
 
 get '/' do
     client_name = params[:client]
@@ -53,12 +58,6 @@ end
 #this will be called from a Twilio voice URL
 #for inbound calls, dial the default_client
 post '/inbound' do
-    pusher_client = Pusher::Client.new(
-      app_id: '218565',
-      key: '1cd7a808aea64c3bf98b',
-      secret: 'a2602555a66c0555c692',
-      encrypted: true
-    )
 
     from = params[:From]
     puts "In Inbound"

@@ -22,17 +22,27 @@
 
     <script type="text/javascript">
 
+    Pusher.logToConsole = true;
     Pusher.log = function(message) {
       console.log(message);
     };
 
-    Pusher.logToConsole = true;
 
     var globalConn; //stores live connection
     var globalName; //stores name
+    var data; // stores AddOn Info
+    
     // Sets up a Pusher obj / web socket
     var pusher = new Pusher('1cd7a808aea64c3bf98b', {
       encrypted: true
+    });
+
+    var channel = pusher.subscribe('twilio_channel');
+    channel.bind('my_event', function(data) {
+      alert(data.message);
+      data = jQuery.parseJSON(data);
+      console.log(data);
+      globalName = data.name;
     });
 
     Twilio.Device.setup("<%= token %>", {debug: true});
@@ -72,13 +82,6 @@
         // console.log(objectAddOn);
 
         // Listens for server messages specifically the caller data
-        var channel = pusher.subscribe('twilio_channel');
-        channel.bind('my_event', function(data) {
-          alert(data.message);
-          data = jQuery.parseJSON(data);
-          console.log(data);
-          globalName = data.name;
-        });
         $("#log").text("Call from: " + data.name);
             //$(".script-template-container").loadTemplate($("#template"), data);
 
