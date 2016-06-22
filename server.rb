@@ -74,7 +74,7 @@ end
 def getnamefromaddons(phone, account_sid, auth_token)
   #lookup with twilio addons
   base_uri = "https://lookups.twilio.com/v1/PhoneNumbers/"
-  addons =  "?AddOns=whitepages_pro_caller_identity&Type=caller-name&Type=carrier"
+  addons =  "?AddOns=whitepages_pro_caller_id"
   auth = {:username => account_sid, :password => auth_token}
   request_url = base_uri +  phone + addons
 
@@ -95,16 +95,10 @@ def getnamefromaddons(phone, account_sid, auth_token)
       name = "#{firstname} #{lastname}"
   end
 
-  if response['caller_name']['caller_name']
-      name = response['caller_name']['caller_name']
-  end
-
   carrier = response['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
   line_type = response['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
 
-
   locations = response['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
-
 
   responseobject = {
     :number => phone,
@@ -121,7 +115,7 @@ def getnamefromaddons(phone, account_sid, auth_token)
     :lattitude => locations['lat_long']['latitude'],
     :longitude=> locations['lat_long']['longitude'],
     :state=> locations['state_code'],
-    :spamscore=> ""
+    :replevel=> ""
   }
 
   return responseobject.to_json
