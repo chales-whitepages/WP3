@@ -22,13 +22,6 @@ get '/' do
         client_name = default_client
     end
 
-    pusher_client = Pusher::Client.new(
-      app_id: '218565',
-      key: '1cd7a808aea64c3bf98b',
-      secret: 'a2602555a66c0555c692',
-      encrypted: true
-    )
-
     capability = Twilio::Util::Capability.new account_sid, auth_token
     # Create an application sid at twilio.com/user/account/apps and use it here
     capability.allow_client_outgoing appsid
@@ -60,6 +53,12 @@ end
 #this will be called from a Twilio voice URL
 #for inbound calls, dial the default_client
 post '/inbound' do
+    pusher_client = Pusher::Client.new(
+      app_id: '218565',
+      key: '1cd7a808aea64c3bf98b',
+      secret: 'a2602555a66c0555c692',
+      encrypted: true
+    )
 
     from = params[:From]
     puts "In Inbound"
