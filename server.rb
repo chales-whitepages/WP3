@@ -110,9 +110,9 @@ def getnamefromaddons(phone, account_sid, auth_token)
     :city     =>  locations['city'],
     :postal_code => locations['postal_code'],
     :lattitude => locations['lat_long']['latitude'],
-    :longitude=> locations['lat_long']['longitude'],
-    :state=> locations['state_code'],
-    :replevel=> ""
+    :longitude => locations['lat_long']['longitude'],
+    :state => locations['state_code'],
+    :replevel => ""
   }
 
   return responseobject.to_json
