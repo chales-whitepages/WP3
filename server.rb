@@ -2,24 +2,17 @@ require 'rubygems'
 require 'sinatra'
 require 'twilio-ruby'
 require 'httparty'
-require 'pusher'
 
 disable :protection
 
 # put your default Twilio Client name here, for when a phone number isn't given
 default_client = "hales"
 # Add a Twilio phone number or number verified with Twilio as the caller ID
-caller_id   = '(844) 700-9029' #ENV['twilio_caller_id']
-account_sid = 'AC3568011c5b1ea77994ed50387219eb8e' #ENV['twilio_account_sid']
-auth_token  = '7e3416e57e8aa7437e8f192d8c822ee0' #ENV['twilio_auth_token']
-appsid      = 'APcb1860769148402be75b173806b777dd' #ENV['twilio_app_id']
+caller_id   = '(844) 700-9029' # ENV['twilio_caller_id']
+account_sid = 'AC3568011c5b1ea77994ed50387219eb8e' # ENV['twilio_account_sid']
+auth_token  = '7e3416e57e8aa7437e8f192d8c822ee0' # ENV['twilio_auth_token']
+appsid      = 'APcb1860769148402be75b173806b777dd' # ENV['twilio_app_id']
 
-pusher_client = Pusher::Client.new(
-  app_id: '218565',
-  key: '1cd7a808aea64c3bf98b',
-  secret: 'a2602555a66c0555c692',
-  encrypted: true
-)
 
 get '/' do
     client_name = params[:client]
@@ -35,12 +28,12 @@ get '/' do
     erb :index, :locals => {:token => token, :client_name => client_name, :caller_id=> caller_id}
 end
 
+
+
 post '/dial' do
     #determine if call is inbound
     number = params[:PhoneNumber]
-    puts "In Dial"
-    inboundAddOn = params[:AddOns]
-    Pusher.trigger('twilio_channel', 'data_transfer', {:AddOn => inboundAddOn})
+
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => caller_id do |d|
@@ -62,11 +55,6 @@ end
 post '/inbound' do
 
     from = params[:From]
-    puts "In Inbound"
-    inboundAddOn = params[:AddOns]
-    puts inboundAddOn
-
-    Pusher.trigger('twilio_channel', 'data_transfer', {:AddOn => inboundAddOn})
 
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
@@ -75,4 +63,67 @@ post '/inbound' do
         end
     end
     response.text
+end
+
+post '/getname' do
+    callerId = params[:callerId]
+    name = getnamefromaddons(callerId, account_sid, auth_token)
+    return name
+end
+
+def getnamefromaddons(phone, account_sid, auth_token)
+  #lookup with twilio addons
+  base_uri = "https://lookups.twilio.com/v1/PhoneNumbers/"
+  addons =  "?AddOns=whitepages_pro_caller_identity&Type=caller-name&Type=carrier"
+  auth = {:username => account_sid, :password => auth_token}
+  request_url = base_uri +  phone + addons
+
+  puts "request #{request_url}"
+  response = HTTParty.get(URI.escape(request_url), :basic_auth => auth)
+
+  name = phone #default, if we don't find a name
+  puts response
+  firstname = " "
+  lastname = " "
+
+
+  #this unfortunate check
+  if response['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names']
+      puts "got a name"
+      firstname = response['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
+      lastname =  response['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
+      name = "#{firstname} #{lastname}"
+  end
+
+  if response['caller_name']['caller_name']
+      name = response['caller_name']['caller_name']
+  end
+
+  carrier = response['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
+  line_type = response['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
+
+
+  locations = response['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
+
+
+  responseobject = {
+    :number => phone,
+    :phone => phone,
+    :name => name,
+    :firstname =>  firstname,
+    :lastname => lastname,
+    :persontype     => "",
+    :phonetype  => line_type,
+    :carrier  =>  carrier,
+    :address  =>  locations['standard_address_line1'] ,
+    :city     =>  locations['city'],
+    :postal_code => locations['postal_code'],
+    :lattitude => locations['lat_long']['latitude'],
+    :longitude=> locations['lat_long']['longitude'],
+    :state=> locations['state_code'],
+    :spamscore=> ""
+  }
+
+  return responseobject.to_json
+
 end
