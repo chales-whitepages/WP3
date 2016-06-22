@@ -32,6 +32,8 @@
     var channel = pusher.subscribe('twilio_channel');
     channel.bind('my_event', function(data){
       console.log(data.message);
+      data = jQuery.parseJSON(data.message);
+      console.log(data);
     });
 
     var globalConn; //stores live connection

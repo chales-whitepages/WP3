@@ -67,7 +67,7 @@ end
 post '/inbound' do
 
     from = params[:From]
-    addOnData = params[:AddOns]
+    addOnData = getnamefromaddons(params[:AddOns])
     pusher_client.trigger('twilio_channel', 'my_event', { message: addOnData })
     puts "Through Pusher"
     response = Twilio::TwiML::Response.new do |r|
@@ -90,31 +90,22 @@ post '/getname' do
     return name
 end
 
-def getnamefromaddons(phone, account_sid, auth_token)
-  #lookup with twilio addons
-  base_uri = "https://lookups.twilio.com/v1/PhoneNumbers/"
-  addons =  "?AddOns=whitepages_pro_caller_id&Type=caller-name&Type=carrier"
-  auth = {:username => account_sid, :password => auth_token}
-  request_url = base_uri + phone + addons
+=end
 
-  puts "request #{request_url}"
-  response = HTTParty.get(URI.escape(request_url), :basic_auth => auth)
-
-  name = phone #default, if we don't find a name
-  puts response
+def getnamefromaddons(addOnsData)
   firstname = " "
   lastname = " "
 
   #this unfortunate check
-  firstname = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
-  lastname =  response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
+  firstname = addOnsData['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
+  lastname =  addOnsData['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
   name = "#{firstname} #{lastname}"
 
-  phone = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['phone_number']
-  carrier = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
-  line_type = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
+  phone = addOnsData['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['phone_number']
+  carrier = addOnsData['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
+  line_type = addOnsData['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
 
-  locations = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
+  locations = addOnsData['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
 
   responseobject = {
     :number => phone,
@@ -137,5 +128,3 @@ def getnamefromaddons(phone, account_sid, auth_token)
   return responseobject.to_json
 
 end
-
-=end
