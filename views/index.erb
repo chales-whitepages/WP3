@@ -8,8 +8,7 @@
       src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
     </script>
     <script type="text/javascript"
-      src="//js.pusher.com/3.1/pusher.min.js">
-    </script>
+      src="//js.pusher.com/3.1/pusher.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
 
@@ -22,13 +21,19 @@
 
 
     <script type="text/javascript">
+
     Pusher.log = function(message) {
       console.log(message);
     };
 
     Pusher.logToConsole = true;
+
     var globalConn; //stores live connection
     var globalName; //stores name
+    // Sets up a Pusher obj / web socket
+    var pusher = new Pusher('1cd7a808aea64c3bf98b', {
+      encrypted: true
+    });
 
     Twilio.Device.setup("<%= token %>", {debug: true});
 
@@ -62,13 +67,10 @@
         globalConn = conn;
         // console.log(conn.parameters);
         // fetch caller name from Whitepages API
-        // $.post("getname", {callerId: conn.parameters.From}, function (data) {
+        // $.postgetname", {callerId: conn.parameters.From}, function (data)
         // var objectAddOn = JSON && JSON.parse(conn.parameters.AddOns) || $.parseJSON(conn.parameters.AddOns);
         // console.log(objectAddOn);
-        // Sets up a Pusher obj / web socket
-        var pusher = new Pusher('1cd7a808aea64c3bf98b', {
-          encrypted: true
-        });
+
         // Listens for server messages specifically the caller data
         var channel = pusher.subscribe('twilio_channel');
         channel.bind('my_event', function(data) {
@@ -85,7 +87,7 @@
             $("<li>", {id: conn.Id, text: data.name}).click(function () {
               showCaller(data);
             }).prependTo("#people");
-    });
+       });
 
       function showCaller (data) {
 
