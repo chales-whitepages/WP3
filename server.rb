@@ -76,7 +76,7 @@ post '/inbound' do
         end
     end
     response.text
-    pusher_client.trigger('twilio_channel', 'my_event', { message: addOnData })
+    #pusher_client.trigger('twilio_channel', 'my_event', { message: addOnData })
 end
 
 
