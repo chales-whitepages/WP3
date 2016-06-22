@@ -97,15 +97,15 @@ def getnamefromaddons(addOnsData)
   lastname = " "
 
   #this unfortunate check
-  firstname = addOnsData['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
-  lastname =  addOnsData['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
+  firstname = addOnsData['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
+  lastname =  addOnsData['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
   name = "#{firstname} #{lastname}"
 
-  phone = addOnsData['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['phone_number']
-  carrier = addOnsData['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
-  line_type = addOnsData['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
+  phone = addOnsData['results']['whitepages_pro_caller_id']['result']['results'][0]['phone_number']
+  carrier = addOnsData['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
+  line_type = addOnsData['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
 
-  locations = addOnsData['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
+  locations = addOnsData['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
 
   responseobject = {
     :number => phone,
