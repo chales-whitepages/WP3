@@ -74,9 +74,9 @@ end
 def getnamefromaddons(phone, account_sid, auth_token)
   #lookup with twilio addons
   base_uri = "https://lookups.twilio.com/v1/PhoneNumbers/"
-  addons =  "?AddOns=whitepages_pro_caller_id"
+  addons =  "?AddOns=whitepages_pro_caller_id&Type=caller-name&Type=carrier"
   auth = {:username => account_sid, :password => auth_token}
-  request_url = base_uri +  phone + addons
+  request_url = base_uri + phone + addons
 
   puts "request #{request_url}"
   response = HTTParty.get(URI.escape(request_url), :basic_auth => auth)
@@ -87,14 +87,15 @@ def getnamefromaddons(phone, account_sid, auth_token)
   lastname = " "
 
   #this unfortunate check
-  firstname = response['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
-  lastname =  response['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
+  firstname = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
+  lastname =  response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
   name = "#{firstname} #{lastname}"
 
-  carrier = response['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
-  line_type = response['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
+  phone = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['phone_number']
+  carrier = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
+  line_type = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
 
-  locations = response['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
+  locations = response['add_ons']['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
 
   responseobject = {
     :number => phone,
