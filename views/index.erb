@@ -78,15 +78,15 @@
           data = jQuery.parseJSON(data);
           console.log(data);
           globalName = data.name;
-          });
-          $("#log").text("Call from: " + data.name);
+        });
+        $("#log").text("Call from: " + data.name);
             //$(".script-template-container").loadTemplate($("#template"), data);
 
-            showCaller(data);
+        showCaller(data);
 
-            $("<li>", {id: conn.Id, text: data.name}).click(function () {
-              showCaller(data);
-            }).prependTo("#people");
+        $("<li>", {id: conn.Id, text: data.name}).click(function () {
+          showCaller(data);
+        }).prependTo("#people");
        });
 
       function showCaller (data) {
