@@ -67,7 +67,7 @@ end
 post '/inbound' do
 
     from = params[:From]
-    addOnData = getnamefromaddons(params[:AddOns])
+    addOnData = params[:AddOns]
     pusher_client.trigger('twilio_channel', 'my_event', { message: addOnData })
     puts "Through Pusher"
     response = Twilio::TwiML::Response.new do |r|
@@ -90,7 +90,7 @@ post '/getname' do
     return name
 end
 
-=end
+
 
 def getnamefromaddons(addOnsData)
   firstname = " "
@@ -128,3 +128,5 @@ def getnamefromaddons(addOnsData)
   return responseobject.to_json
 
 end
+
+=end
