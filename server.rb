@@ -38,7 +38,9 @@ end
 post '/dial' do
     #determine if call is inbound
     number = params[:PhoneNumber]
-
+    puts "In Dial"
+    inboundAddOn = params[:AddOns]
+    Pusher.trigger('twilio_channel', 'data_transfer', {:AddOn => inboundAddOn})
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => caller_id do |d|
