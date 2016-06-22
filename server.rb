@@ -86,14 +86,10 @@ def getnamefromaddons(phone, account_sid, auth_token)
   firstname = " "
   lastname = " "
 
-
   #this unfortunate check
-  if response['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names']
-      puts "got a name"
-      firstname = response['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
-      lastname =  response['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
-      name = "#{firstname} #{lastname}"
-  end
+  firstname = response['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
+  lastname =  response['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
+  name = "#{firstname} #{lastname}"
 
   carrier = response['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
   line_type = response['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
