@@ -25,7 +25,6 @@ pusher_client.trigger('twilio_channel', 'my_event', {
   message: 'hello world'
 })
 
-$addOnData
 
 get '/' do
     client_name = params[:client]
@@ -68,7 +67,7 @@ end
 post '/inbound' do
 
     from = params[:From]
-    addOnData = params[:AddOns]
+    AddOnData = params[:AddOns]
 
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
@@ -79,7 +78,7 @@ post '/inbound' do
     response.text
 end
 
-pusher_client.trigger('twilio_channel', 'my_event', { message: addOnData })
+pusher_client.trigger('twilio_channel', 'my_event', { message: AddOnData })
 
 =begin
 
