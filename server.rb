@@ -25,6 +25,8 @@ pusher_client.trigger('twilio_channel', 'my_event', {
   message: 'hello world'
 })
 
+$addOnData
+
 get '/' do
     client_name = params[:client]
     if client_name.nil?
