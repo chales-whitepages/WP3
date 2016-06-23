@@ -25,6 +25,9 @@
 
     Pusher.logToConsole = true;
 
+    var globalConn; //stores live connection
+    var globalName; //stores name
+
     var pusher = new Pusher('1cd7a808aea64c3bf98b', {
       encrypted: true
     });
@@ -34,10 +37,11 @@
       console.log(data.message);
       data = jQuery.parseJSON(data.message);
       console.log(data);
+      $("#log").text("Call from: " + data.results.whitepages_pro_caller_id.result.results[0].first_name);
+      
     });
 
-    var globalConn; //stores live connection
-    var globalName; //stores name
+
     Twilio.Device.setup("<%= token %>", {debug: true});
 
       Twilio.Device.ready(function (device) {
@@ -144,7 +148,7 @@
       <div class='caller_profile'>
         <div class="caller_profile_vcard vcard" style="background-image:url('//maps.googleapis.com/maps/api/staticmap?zoom=12&size=600x300&sensor=false&center={{city}},{{state}}.png')">
          <div class="caller_profile_text">
-          <p><label class="caller_profile_label">Number:</label>   <span class="fn editable" id="profile_edit_name">{{number}}</span></p>
+           <p><label class="caller_profile_label">Number:</label>   <span class="fn editable" id="profile_edit_name">{{number}}</span></p>
            <p><label class="caller_profile_label">Name:</label>   <span class="fn editable" id="profile_edit_name">{{name}}</span></p>
            <p><label class="caller_profile_label">Phone:</label>   <span class="fn editable" id="profile_edit_name">{{phonetype}}</span></p>
            <%# <p><label class="caller_profile_label">Spam%:</label>   <span class="fn editable" id="profile_edit_name">{{replevel}}</span></p> %>
