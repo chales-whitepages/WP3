@@ -25,7 +25,6 @@ pusher_client.trigger('twilio_channel', 'my_event', {
   message: 'hello world'
 })
 
-
 get '/' do
     client_name = params[:client]
     if client_name.nil?
@@ -39,8 +38,6 @@ get '/' do
     token = capability.generate
     erb :index, :locals => {:token => token, :client_name => client_name, :caller_id=> caller_id}
 end
-
-
 
 post '/dial' do
     #determine if call is inbound
@@ -77,56 +74,4 @@ post '/inbound' do
         end
     end
     response.text
-
 end
-
-
-
-=begin
-
-post '/getname' do
-    callerId = params[:callerId]
-    name = getnamefromaddons(callerId, account_sid, auth_token)
-    return name
-end
-
-
-
-def getnamefromaddons(addOnsData)
-  firstname = " "
-  lastname = " "
-
-  #this unfortunate check
-  firstname = addOnsData['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['first_name']
-  lastname =  addOnsData['results']['whitepages_pro_caller_id']['result']['results'][0]['belongs_to'][0]['names'][0]['last_name']
-  name = "#{firstname} #{lastname}"
-
-  phone = addOnsData['results']['whitepages_pro_caller_id']['result']['results'][0]['phone_number']
-  carrier = addOnsData['results']['whitepages_pro_caller_id']['result']['results'][0]['carrier']
-  line_type = addOnsData['results']['whitepages_pro_caller_id']['result']['results'][0]['line_type']
-
-  locations = addOnsData['results']['whitepages_pro_caller_id']['result']['results'][0]['associated_locations'][0]
-
-  responseobject = {
-    :number => phone,
-    :phone => phone,
-    :name => name,
-    :firstname =>  firstname,
-    :lastname => lastname,
-    :persontype     => "",
-    :phonetype  => line_type,
-    :carrier  =>  carrier,
-    :address  =>  locations['standard_address_line1'] ,
-    :city     =>  locations['city'],
-    :postal_code => locations['postal_code'],
-    :lattitude => locations['lat_long']['latitude'],
-    :longitude => locations['lat_long']['longitude'],
-    :state => locations['state_code'],
-    :replevel => ""
-  }
-
-  return responseobject.to_json
-
-end
-
-=end

@@ -19,11 +19,7 @@
 
     </style>
 
-
-
     <script type="text/javascript">
-
-    Pusher.logToConsole = true;
 
     var globalConn; //stores live connection
     var globalName; //stores name
@@ -45,102 +41,88 @@
     var channel = pusher.subscribe('twilio_channel');
     channel.bind('my_event', function(data){
       data = jQuery.parseJSON(data.message);
-      console.log(data);
       buildCaller(callerProfile, data)
       $("#log").text("Call from: " + callerProfile.name);
-      console.log(callerProfile);
-      // showCaller(callerProfile);
     });
-
 
     Twilio.Device.setup("<%= token %>", {debug: true});
 
-      Twilio.Device.ready(function (device) {
-        $("#log").text("Ready");
-      });
+    Twilio.Device.ready(function (device) {
+      $("#log").text("Ready");
+    });
 
-      Twilio.Device.error(function (error) {
-        $("#log").text("Error: " + error.message);
-      });
+    Twilio.Device.error(function (error) {
+      $("#log").text("Error: " + error.message);
+    });
 
-      Twilio.Device.connect(function (conn) {
-        $("#log").text("On call with: " + callerProfile.name);
-      });
+    Twilio.Device.connect(function (conn) {
+      $("#log").text("On call with: " + callerProfile.name);
+    });
 
-      Twilio.Device.disconnect(function (conn) {
-        $("#log").text("Call ended");
-        $(".script-template-container").hide();
+    Twilio.Device.disconnect(function (conn) {
+      $("#log").text("Call ended");
+      $(".script-template-container").hide();
 
-      });
+    });
 
-      Twilio.Device.cancel(function (conn) {
-        $("#log").text("Call missed");
-        $(".script-template-container").hide();
-      });
+    Twilio.Device.cancel(function (conn) {
+      $("#log").text("Call missed");
+      $(".script-template-container").hide();
+    });
 
-      Twilio.Device.incoming(function (conn) {
+    Twilio.Device.incoming(function (conn) {
         // set the globalConn
-        // $("#log").text("Getting name from Twilio Add-ons...");
-        globalConn = conn;
-        // fetch caller name from Whitepages API
-      //  $.post("getname", {callerId: conn.parameters.From}, function (data) {
-            // data = jQuery.parseJSON(data);
-            // globalName = data.name;
-            $("#log").text("Call from: " + callerProfile.name);
-            //$(".script-template-container").loadTemplate($("#template"), data);
+      globalConn = conn;
 
-            showCaller(callerProfile);
+      $("#log").text("Call from: " + callerProfile.name);
+      showCaller(callerProfile);
 
-            $("<li>", {id: conn.Id, text: callerProfile.name}).click(function () {
-                showCaller(callerProfile);
-             }).prependTo("#people");
-        //});
-      });
+      $("<li>", {id: conn.Id, text: callerProfile.name}).click(function () {
+        showCaller(callerProfile);
+      }).prependTo("#people");
+    });
 
-      function showCaller (data) {
+    function showCaller (data) {
+        var source   = $("#template").html();
+        var template = Handlebars.compile(source);
+        var context = data;
+        var html    = template(context);
+        $(".script-template-container").html(html);
+        $(".script-template-container").show();
+        $("#calllog").click( function() {
+            $(".script-template-container").hide();
+        });
+    }
 
-            var source   = $("#template").html();
-            var template = Handlebars.compile(source);
-            var context = data;
-            var html    = template(context);
-            $(".script-template-container").html(html);
-            $(".script-template-container").show();
-            $("#calllog").click( function() {
-                $(".script-template-container").hide();
-            });
-
-      }
-
-      function hideCaller () {
-          $(".script-template-container").hide();
-      }
+    function hideCaller () {
+        $(".script-template-container").hide();
+    }
 
 
-      function answer() {
+    function answer() {
         // answer the call
-        globalConn.accept();
-      }
+      globalConn.accept();
+    }
 
-      function hangup() {
-        Twilio.Device.disconnectAll();
-      }
+    function hangup() {
+      Twilio.Device.disconnectAll();
+    }
 
-      function addcaller() {
-      }
+    function addcaller() {
+    }
 
-      function buildCaller(caller, data) {
-        caller.name = data.results.whitepages_pro_caller_id.result.results[0].belongs_to[0].names[0].first_name
+    function buildCaller(caller, data) {
+      caller.name = data.results.whitepages_pro_caller_id.result.results[0].belongs_to[0].names[0].first_name
         + " " + data.results.whitepages_pro_caller_id.result.results[0].belongs_to[0].names[0].last_name;
-        caller.number = data.results.whitepages_pro_caller_id.result.results[0].phone_number;
-        caller.phonetype = data.results.whitepages_pro_caller_id.result.results[0].line_type;
-        caller.carrier = data.results.whitepages_pro_caller_id.result.results[0].carrier;
-        caller.address = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].standard_address_line1
+      caller.number = data.results.whitepages_pro_caller_id.result.results[0].phone_number;
+      caller.phonetype = data.results.whitepages_pro_caller_id.result.results[0].line_type;
+      caller.carrier = data.results.whitepages_pro_caller_id.result.results[0].carrier;
+      caller.address = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].standard_address_line1
         + " " + data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].standard_address_line2;
-        caller.state = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].state_code;
-        caller.postal_code = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].postal_code;
-        caller.city = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].city;
-
-      }
+      caller.state = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].state_code;
+      caller.postal_code = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].postal_code;
+      caller.city = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].city;
+    }
 
     </script>
   </head>
