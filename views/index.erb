@@ -37,8 +37,8 @@
       console.log(data.message);
       data = jQuery.parseJSON(data.message);
       console.log(data);
-      $("#log").text("Call from: " + data.results.whitepages_pro_caller_id.result.results[0].belongs_to[0].names[0].first_name);
-      globalName = data.results.whitepages_pro_caller_id.result.results[0].belongs_to[0].names[0].first_name);
+      $("#log").text("Call from: " + data.results.whitepages_pro_caller_id.result.results[0].first_name);
+      
     });
 
 
