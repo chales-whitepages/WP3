@@ -27,6 +27,16 @@
 
     var globalConn; //stores live connection
     var globalName; //stores name
+    var callerProfile = {
+      number: ""
+      name: ""
+      phonetype: ""
+      carrier: ""
+      address: ""
+      state: ""
+      city: ""
+      postal_code: ""
+    }
 
     var pusher = new Pusher('1cd7a808aea64c3bf98b', {
       encrypted: true
@@ -34,10 +44,10 @@
 
     var channel = pusher.subscribe('twilio_channel');
     channel.bind('my_event', function(data){
-      console.log(data.message);
       data = jQuery.parseJSON(data.message);
       console.log(data);
-      $("#log").text("Call from: " + data.results.whitepages_pro_caller_id.result.results[0].belongs_to[0].names[0].first_name);
+      buildCaller(callerProfile, data)
+      $("#log").text("Call from: " + callerProfile.name;
 
     });
 
@@ -69,13 +79,13 @@
 
       Twilio.Device.incoming(function (conn) {
         // set the globalConn
-        $("#log").text("Getting name from Twilio Add-ons...");
+        // $("#log").text("Getting name from Twilio Add-ons...");
         globalConn = conn;
         // fetch caller name from Whitepages API
         $.post("getname", {callerId: conn.parameters.From}, function (data) {
             data = jQuery.parseJSON(data);
             globalName = data.name;
-            $("#log").text("Call from: " + data.name);
+            // $("#log").text("Call from: " + data.name);
             //$(".script-template-container").loadTemplate($("#template"), data);
 
             showCaller(data);
@@ -115,6 +125,20 @@
       }
 
       function addcaller() {
+      }
+
+      function buildCaller(caller, data) {
+        caller.name = data.results.whitepages_pro_caller_id.result.results[0].belongs_to[0].names[0].first_name
+        + " " + data.results.whitepages_pro_caller_id.result.results[0].belongs_to[0].names[0].last_name;
+        caller.number = data.results.whitepages_pro_caller_id.result.results[0].phone_number;
+        caller.phonetype = data.results.whitepages_pro_caller_id.result.results[0].line_type;
+        caller.carrier = data.results.whitepages_pro_caller_id.result.results[0].carrier;
+        caller.address = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].standard_address_line1
+        + " " + data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].standard_address_line2;
+        caller.state = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].state_code;
+        caller.postal_code = data.results.whitepages_pro_caller_id.results[0].associated_locations[0].postal_code;
+        caller.city = data.results.whitepages_pro_caller_id.results[0].associated_locations[0].city;
+
       }
 
     </script>
