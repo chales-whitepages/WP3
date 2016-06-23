@@ -87,7 +87,7 @@
       //  $.post("getname", {callerId: conn.parameters.From}, function (data) {
             // data = jQuery.parseJSON(data);
             // globalName = data.name;
-            // $("#log").text("Call from: " + data.name);
+            $("#log").text("Call from: " + globalName);
             //$(".script-template-container").loadTemplate($("#template"), data);
 
             showCaller(callerProfile);
@@ -138,8 +138,8 @@
         caller.address = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].standard_address_line1
         + " " + data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].standard_address_line2;
         caller.state = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].state_code;
-        caller.postal_code = data.results.whitepages_pro_caller_id.results[0].associated_locations[0].postal_code;
-        caller.city = data.results.whitepages_pro_caller_id.results[0].associated_locations[0].city;
+        caller.postal_code = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].postal_code;
+        caller.city = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].city;
 
       }
 
