@@ -28,14 +28,14 @@
     var globalConn; //stores live connection
     var globalName; //stores name
     var callerProfile = {
-      number: ""
-      nameId: ""
-      phonetype: ""
-      carrier: ""
-      address: ""
-      state: ""
-      city: ""
-      postal_code: ""
+      number: "",
+      nameId: "",
+      phonetype: "",
+      carrier: "",
+      address: "",
+      state: "",
+      city: "",
+      postal_code: "",
     }
 
     var pusher = new Pusher('1cd7a808aea64c3bf98b', {
@@ -48,6 +48,7 @@
       console.log(data);
       buildCaller(callerProfile, data)
       $("#log").text("Call from: " + callerProfile.nameId);
+      globalName = callerProfile.nameId;
       // showCaller(callerProfile);
     });
 
