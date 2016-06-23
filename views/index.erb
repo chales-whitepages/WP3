@@ -29,7 +29,7 @@
     var globalName; //stores name
     var callerProfile = {
       number: "",
-      nameId: "",
+      name: "",
       phonetype: "",
       carrier: "",
       address: "",
@@ -47,8 +47,7 @@
       data = jQuery.parseJSON(data.message);
       console.log(data);
       buildCaller(callerProfile, data)
-      $("#log").text("Call from: " + callerProfile.nameId);
-      globalName = callerProfile.nameId;
+      $("#log").text("Call from: " + callerProfile.name);
       console.log(callerProfile);
       // showCaller(callerProfile);
     });
@@ -65,7 +64,7 @@
       });
 
       Twilio.Device.connect(function (conn) {
-        $("#log").text("On call with: " + globalName);
+        $("#log").text("On call with: " + callerProfile.name);
       });
 
       Twilio.Device.disconnect(function (conn) {
@@ -87,12 +86,12 @@
       //  $.post("getname", {callerId: conn.parameters.From}, function (data) {
             // data = jQuery.parseJSON(data);
             // globalName = data.name;
-            $("#log").text("Call from: " + globalName);
+            $("#log").text("Call from: " + callerProfile.name);
             //$(".script-template-container").loadTemplate($("#template"), data);
 
             showCaller(callerProfile);
 
-            $("<li>", {id: conn.Id, text: callerProfile.nameId}).click(function () {
+            $("<li>", {id: conn.Id, text: callerProfile.name}).click(function () {
                 showCaller(callerProfile);
              }).prependTo("#people");
         //});
