@@ -22,7 +22,7 @@
     <script type="text/javascript">
 
     var globalConn; //stores live connection
-    var globalName; //stores name
+    // Stores the Addon Data
     var callerProfile = {
       number: "",
       name: "",
@@ -38,7 +38,9 @@
       encrypted: true
     });
 
+    // Connects to the web socket set up by the server.
     var channel = pusher.subscribe('twilio_channel');
+    // Looks for the 'event' and works with the incoming data
     channel.bind('my_event', function(data){
       data = jQuery.parseJSON(data.message);
       buildCaller(callerProfile, data)

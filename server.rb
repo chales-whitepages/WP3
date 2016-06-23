@@ -14,6 +14,7 @@ account_sid = 'AC3568011c5b1ea77994ed50387219eb8e' # ENV['twilio_account_sid']
 auth_token  = '7e3416e57e8aa7437e8f192d8c822ee0' # ENV['twilio_auth_token']
 appsid      = 'APcb1860769148402be75b173806b777dd' # ENV['twilio_app_id']
 
+# Setting up the web socket client
 pusher_client = Pusher::Client.new(
   app_id: "218565",
   key: '1cd7a808aea64c3bf98b',
@@ -21,6 +22,7 @@ pusher_client = Pusher::Client.new(
   encrypted: true
 )
 
+# Opens the web socket
 pusher_client.trigger('twilio_channel', 'my_event', {
   message: 'hello world'
 })
@@ -32,7 +34,7 @@ get '/' do
     end
 
     capability = Twilio::Util::Capability.new account_sid, auth_token
-    # Create an application sid at twilio.com/user/account/apps and use it here
+    # Create an application sid at twilio.com/user/account/apps and use it here/above
     capability.allow_client_outgoing appsid
     capability.allow_client_incoming client_name
     token = capability.generate
@@ -65,6 +67,7 @@ post '/inbound' do
 
     from = params[:From]
     addOnData = params[:AddOns]
+    # Sending the add on data through the web socket
     pusher_client.trigger('twilio_channel', 'my_event', { message: addOnData })
     puts "Through Pusher"
     response = Twilio::TwiML::Response.new do |r|
