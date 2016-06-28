@@ -34,7 +34,7 @@
       postal_code: "",
     }
 
-    var pusher = new Pusher('1cd7a808aea64c3bf98b', {
+    var pusher = new Pusher(ENV['pusher_key'], { 
       encrypted: true
     });
 

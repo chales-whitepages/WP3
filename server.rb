@@ -9,16 +9,16 @@ disable :protection
 # put your default Twilio Client name here, for when a phone number isn't given
 default_client = "hales"
 # Add a Twilio phone number or number verified with Twilio as the caller ID
-caller_id   = '(844) 700-9029' # ENV['twilio_caller_id']
-account_sid = 'AC3568011c5b1ea77994ed50387219eb8e' # ENV['twilio_account_sid']
-auth_token  = '7e3416e57e8aa7437e8f192d8c822ee0' # ENV['twilio_auth_token']
-appsid      = 'APcb1860769148402be75b173806b777dd' # ENV['twilio_app_id']
+caller_id   = ENV['twilio_caller_id']
+account_sid = ENV['twilio_account_sid']
+auth_token  = ENV['twilio_auth_token']
+appsid      = ENV['twilio_app_id']
 
 # Setting up the web socket client
 pusher_client = Pusher::Client.new(
-  app_id: "218565",
-  key: '1cd7a808aea64c3bf98b',
-  secret: 'a2602555a66c0555c692',
+  app_id: ENV['pusher_app_id']
+  key: ENV['pusher_key']
+  secret: ENV['pusher_secret']
   encrypted: true
 )
 
