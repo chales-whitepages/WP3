@@ -16,9 +16,9 @@ appsid      = ENV['twilio_app_id']
 
 # Setting up the web socket client
 pusher_client = Pusher::Client.new(
-  app_id: ENV['pusher_app_id']
-  key: ENV['pusher_key']
-  secret: ENV['pusher_secret']
+  app_id: ENV['pusher_app_id'],
+  key: ENV['pusher_key'],
+  secret: ENV['pusher_secret'],
   encrypted: true
 )
 
