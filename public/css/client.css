@@ -50,7 +50,6 @@ body {
     border:none !important;
     overflow: auto;
     overflow-x: hidden;
-
 }
 
 #people li {
@@ -97,9 +96,6 @@ body {
 
 
 
-    
-
-
 .caller_profile_text {
   font-family: 'PT Sans', sans-serif;
   font-size: 12;
@@ -126,7 +122,7 @@ body {
   margin:0 0 0 14px;
   padding:3px 8px;
   }
-  
+
 .caller_profile_vcard p {
   margin:0 0 10px;
   height:14px;

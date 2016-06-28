@@ -22,11 +22,6 @@ pusher_client = Pusher::Client.new(
   encrypted: true
 )
 
-# Opens the web socket
-pusher_client.trigger('twilio_channel', 'my_event', {
-  message: 'hello world'
-})
-
 get '/' do
     client_name = params[:client]
     if client_name.nil?
@@ -69,7 +64,7 @@ post '/inbound' do
     addOnData = params[:AddOns]
     # Sending the add on data through the web socket
     pusher_client.trigger('twilio_channel', 'my_event', { message: addOnData })
-    puts "Through Pusher"
+    # Dials the default_client
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => from do |d|

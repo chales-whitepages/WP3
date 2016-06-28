@@ -47,7 +47,7 @@
       $("#log").text("Call from: " + callerProfile.name);
     });
 
-    Twilio.Device.setup("<%= token %>", {debug: true});
+    Twilio.Device.setup("<%= token %>", {debug: false});
 
     Twilio.Device.ready(function (device) {
       $("#log").text("Ready");
@@ -64,7 +64,6 @@
     Twilio.Device.disconnect(function (conn) {
       $("#log").text("Call ended");
       $(".script-template-container").hide();
-
     });
 
     Twilio.Device.cancel(function (conn) {
@@ -79,6 +78,7 @@
       $("#log").text("Call from: " + callerProfile.name);
       showCaller(callerProfile);
 
+      // Show the caller id info
       $("<li>", {id: conn.Id, text: callerProfile.name}).click(function () {
         showCaller(callerProfile);
       }).prependTo("#people");
@@ -100,7 +100,6 @@
         $(".script-template-container").hide();
     }
 
-
     function answer() {
         // answer the call
       globalConn.accept();
@@ -113,6 +112,7 @@
     function addcaller() {
     }
 
+    // Parsing the JSON response into individual variables
     function buildCaller(caller, data) {
       caller.name = data.results.whitepages_pro_caller_id.result.results[0].belongs_to[0].names[0].first_name
         + " " + data.results.whitepages_pro_caller_id.result.results[0].belongs_to[0].names[0].last_name;
@@ -139,7 +139,6 @@
     </div>
     <div class="phone">For demo call: <%=caller_id%></div>
 
-
     <button class="call" onclick="answer();">
       Answer
     </button>
@@ -149,7 +148,6 @@
     </button>
 
     <div id="log">Starting up....</div>
-
 
     <div class="script-template-container">     </div>
 
@@ -172,14 +170,11 @@
       </div>
       </script>
 
-
     </script>
     <div id="calllog" onclick="hideCaller();">
       <title>Call Log</title>
     </div>
     <ul id="people"/>
-
-
 
   </body>
 </html>
