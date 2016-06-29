@@ -8,14 +8,10 @@ But, if  you are feeling lazy, or in a hurry, you can use this source code to si
 
 ## Quicker Install ##
 
-Two Whitepages Pro Blog Post have additional walkthrough information.
-
-
 
 ### Prerequisites 
 1.  A Heroku account. Go sign up now, it's free (to start): www.heroku.com
 2.  A Twilio account. Go sign up now, it's free (to start): www.twilio.com
-3.  A Pusher account. Go sign up now, it's free (to start): www.pusher.com
 
 ### Twilio steps
 
