@@ -7,11 +7,12 @@ If you follow that tutorial (which I highly encourage you to do so), you will ha
 But, if  you are feeling lazy, or in a hurry, you can use this source code to simply deploy to Heroku using the lovely [Heroku Button](https://blog.heroku.com/archives/2014/8/7/heroku-button). 
 
 ## Quicker Install ##
-
+There are two Whitepages Pro blog posts that provide additional details for getting this app up and ready.
 
 ### Prerequisites 
 1.  A Heroku account. Go sign up now, it's free (to start): www.heroku.com
 2.  A Twilio account. Go sign up now, it's free (to start): www.twilio.com
+3.  A Pusher account. Go sign up now, it's free (to start): www.pusher.com
 
 ### Twilio steps
 
