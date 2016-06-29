@@ -8,6 +8,9 @@
       src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
     </script>
 
+    <script type="text/javascript"
+      src="https://js.pusher.com/3.1/pusher.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
 
     <link href="css/client.css"
@@ -16,101 +19,125 @@
 
     </style>
 
-
-
     <script type="text/javascript">
 
     var globalConn; //stores live connection
-    var globalName; //stores name
+    // Stores the Addon Data
+    var callerProfile = {
+      number: "",
+      name: "",
+      phonetype: "",
+      carrier: "",
+      address: "",
+      state: "",
+      city: "",
+      postal_code: "",
+    }
 
-    // Create the client with a capability token
-    Twilio.Device.setup("<%= token %>", {debug: true});
+    var pusher = new Pusher( '<%=ENV['pusher_key']%>', {
+      encrypted: true
+    });
 
-      // Let us know when the client is ready
-      Twilio.Device.ready(function (device) {
-        $("#log").text("Ready");
-      });
+    // Connects to the web socket set up by the server.
+    var channel = pusher.subscribe('twilio_channel');
+    // Looks for the 'event' and works with the incoming data
+    channel.bind('my_event', function(data){
+      data = jQuery.parseJSON(data.message);
+      buildCaller(callerProfile, data)
+      $("#log").text("Call from: " + callerProfile.name);
+    });
 
-      // report any errors on the screen
-      Twilio.Device.error(function (error) {
-        $("#log").text("Error: " + error.message);
-      });
+    Twilio.Device.setup("<%= token %>", {debug: false});
 
-      Twilio.Device.connect(function (conn) {
-        $("#log").text("On call with: " + globalName);
-      });
+    Twilio.Device.ready(function (device) {
+      $("#log").text("Ready");
+    });
 
-      Twilio.Device.disconnect(function (conn) {
-        $("#log").text("Call ended");
-        $(".script-template-container").hide();
+    Twilio.Device.error(function (error) {
+      $("#log").text("Error: " + error.message);
+    });
 
-      });
+    Twilio.Device.connect(function (conn) {
+      $("#log").text("On call with: " + callerProfile.name);
+    });
 
-      Twilio.Device.cancel(function (conn) {
-        $("#log").text("Call missed");
-        $(".script-template-container").hide();
-      });
+    Twilio.Device.disconnect(function (conn) {
+      $("#log").text("Call ended");
+      $(".script-template-container").hide();
+    });
 
-      Twilio.Device.incoming(function (conn) {
+    Twilio.Device.cancel(function (conn) {
+      $("#log").text("Call missed");
+      $(".script-template-container").hide();
+    });
+
+    Twilio.Device.incoming(function (conn) {
         // set the globalConn
-        $("#log").text("Getting name from Whitepages...");
-        globalConn = conn;
-        // fetch caller name from Whitepages API
-        $.post("getname", {callerId: conn.parameters.From}, function (data) {
-            data = jQuery.parseJSON(data);
-            globalName = data.name;
-            $("#log").text("Call from: " + data.name);
-            //$(".script-template-container").loadTemplate($("#template"), data);
+      globalConn = conn;
 
-            showCaller(data);
+      $("#log").text("Call from: " + callerProfile.name);
+      showCaller(callerProfile);
 
-            $("<li>", {id: conn.Id, text: data.name}).click(function () {
-                showCaller(data);
-             }).prependTo("#people");
+      // Show the caller id info
+      $("<li>", {id: conn.Id, text: callerProfile.name}).click(function () {
+        showCaller(callerProfile);
+      }).prependTo("#people");
+    });
+
+    function showCaller (data) {
+        var source   = $("#template").html();
+        var template = Handlebars.compile(source);
+        var context = data;
+        var html    = template(context);
+        $(".script-template-container").html(html);
+        $(".script-template-container").show();
+        $("#calllog").click( function() {
+            $(".script-template-container").hide();
         });
-      });
+    }
 
-      function showCaller (data) {
+    function hideCaller () {
+        $(".script-template-container").hide();
+    }
 
-            var source   = $("#template").html();
-            var template = Handlebars.compile(source);
-            var context = data;
-            var html    = template(context);
-            $(".script-template-container").html(html);
-            $(".script-template-container").show();
-            $("#calllog").click( function() {
-                $(".script-template-container").hide();
-            });
-
-      }
-
-      function hideCaller () {
-          $(".script-template-container").hide();
-      }
-
-
-      function answer() {
+    function answer() {
         // answer the call
-        globalConn.accept();
-      }
+      globalConn.accept();
+    }
 
-      function hangup() {
-        Twilio.Device.disconnectAll();
-      }
+    function hangup() {
+      Twilio.Device.disconnectAll();
+    }
 
-      function addcaller() {
-      }
+    function addcaller() {
+    }
+
+    // Parsing the JSON response into individual variables
+    function buildCaller(caller, data) {
+      caller.name = data.results.whitepages_pro_caller_id.result.results[0].belongs_to[0].names[0].first_name
+        + " " + data.results.whitepages_pro_caller_id.result.results[0].belongs_to[0].names[0].last_name;
+      caller.number = data.results.whitepages_pro_caller_id.result.results[0].phone_number;
+      caller.phonetype = data.results.whitepages_pro_caller_id.result.results[0].line_type;
+      caller.carrier = data.results.whitepages_pro_caller_id.result.results[0].carrier;
+      caller.address = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].standard_address_line1
+        + " " + data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].standard_address_line2;
+      caller.state = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].state_code;
+      caller.postal_code = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].postal_code;
+      caller.city = data.results.whitepages_pro_caller_id.result.results[0].associated_locations[0].city;
+    }
 
     </script>
   </head>
   <body>
 
     <div class="logos">
-      <div id="twilio"><img src="images/twilio-logo-2100x650.png" width="175px"></img></div>
-      <div id="whitepages"><img src="//pro.whitepages.com/wp-content/uploads/2014/09/wp-logo-large.png" width="300px"></img></div>
+      <div id="twilio"><a href="https://www.twilio.com"><img src="images/twilio-logo-2100x650.png" width="175px"></img></a></div>
+      <!--h3>Now with Twilio Add-ons!</h3-->
+      <!--div id="whitepages"><a href="http://pro.whitepages.com/developer/"><img src="//pro.whitepages.com/wp-content/uploads/2014/09/wp-logo-large.png" width="300px"></img></a></div-->
+      <div id="addons"><img src="//pro.whitepages.com/wp-content/uploads/2014/09/wp-logo-large.png" width="300px"></img></a></div>
+
     </div>
     <div class="phone">For demo call: <%=caller_id%></div>
-
 
     <button class="call" onclick="answer();">
       Answer
@@ -122,36 +149,32 @@
 
     <div id="log">Starting up....</div>
 
-
     <div class="script-template-container">     </div>
 
     <script type="text/x-handlebars-template" id="template">
       <div class='caller_profile'>
-        <div class="caller_profile_vcard vcard" style="background-image:url('//maps.googleapis.com/maps/api/staticmap?zoom=12&size=600x300&sensor=false&center={{city}},{{state_code}}.png')">
+        <div class="caller_profile_vcard vcard" style="background-image:url('//maps.googleapis.com/maps/api/staticmap?zoom=12&size=600x300&sensor=false&center={{city}},{{state}}.png')">
          <div class="caller_profile_text">
-          <p><label class="caller_profile_label">Number:</label>   <span class="fn editable" id="profile_edit_name">{{number}}</span></p>
+           <p><label class="caller_profile_label">Number:</label>   <span class="fn editable" id="profile_edit_name">{{number}}</span></p>
            <p><label class="caller_profile_label">Name:</label>   <span class="fn editable" id="profile_edit_name">{{name}}</span></p>
-           <p><label class="caller_profile_label">LineType:</label>   <span class="fn editable" id="profile_edit_name">{{phonetype}}</span></p>
+           <p><label class="caller_profile_label">Phone:</label>   <span class="fn editable" id="profile_edit_name">{{phonetype}}</span></p>
+           <%# <p><label class="caller_profile_label">Spam%:</label>   <span class="fn editable" id="profile_edit_name">{{replevel}}</span></p> %>
            <p><label class="caller_profile_label">Carrier:</label>   <span class="fn editable" id="profile_edit_name" >{{carrier}}</span></p>
-           <p><label class="caller_profile_label">RepLevel:</label>   <span class="fn editable" id="profile_edit_name">{{replevel}}</span></p>
-           <p><label class="caller_profile_label">Type:</label>   <span class="fn editable" id="profile_edit_name" >{{persontype}}</span></p>
+           <%# <p><label class="caller_profile_label">Type:</label>   <span class="fn editable" id="profile_edit_name" >{{persontype}}</span></p> %>
            <p><label class="caller_profile_label">Address:</label>   <span class="fn editable" id="profile_edit_name" >{{address}}</span></p>
            <p><label class="caller_profile_label">City:</label>   <span class="fn editable" id="profile_edit_name">{{city}}</span></p>
-           <p><label class="caller_profile_label">State:</label>   <span class="fn editable" id="profile_edit_name">{{state_code}}<span></p>
+           <p><label class="caller_profile_label">State:</label>  <span class="fn editable" id="profile_edit_name">{{state}}</span></p>
            <p><label class="caller_profile_label">Zip:</label>   <span class="fn editable" id="profile_edit_name">{{postal_code}}</span></p>
          </div>
         </div>
       </div>
       </script>
 
-
     </script>
     <div id="calllog" onclick="hideCaller();">
       <title>Call Log</title>
     </div>
     <ul id="people"/>
-
-
 
   </body>
 </html>

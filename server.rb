@@ -2,17 +2,25 @@ require 'rubygems'
 require 'sinatra'
 require 'twilio-ruby'
 require 'httparty'
+require 'pusher'
 
 disable :protection
 
 # put your default Twilio Client name here, for when a phone number isn't given
 default_client = "hales"
 # Add a Twilio phone number or number verified with Twilio as the caller ID
-caller_id   = '(844) 700-9029' #ENV['twilio_caller_id']
-account_sid = 'AC3568011c5b1ea77994ed50387219eb8e' #ENV['twilio_account_sid']
-auth_token  = '7e3416e57e8aa7437e8f192d8c822ee0' #ENV['twilio_auth_token']
-appsid      = 'APcb1860769148402be75b173806b777dd' #ENV['twilio_app_id']
-api_key     = '76a12eda22c06e1428a069f8b7feedfc' #ENV['whitepages_api_key']
+caller_id   = ENV['twilio_caller_id']
+account_sid = ENV['twilio_account_sid']
+auth_token  = ENV['twilio_auth_token']
+appsid      = ENV['twilio_app_id']
+
+# Setting up the web socket client
+pusher_client = Pusher::Client.new(
+  app_id: ENV['pusher_app_id'],
+  key: ENV['pusher_key'],
+  secret: ENV['pusher_secret'],
+  encrypted: true
+)
 
 get '/' do
     client_name = params[:client]
@@ -21,14 +29,12 @@ get '/' do
     end
 
     capability = Twilio::Util::Capability.new account_sid, auth_token
-    # Create an application sid at twilio.com/user/account/apps and use it here
+    # Create an application sid at twilio.com/user/account/apps and use it here/above
     capability.allow_client_outgoing appsid
     capability.allow_client_incoming client_name
     token = capability.generate
     erb :index, :locals => {:token => token, :client_name => client_name, :caller_id=> caller_id}
 end
-
-
 
 post '/dial' do
     #determine if call is inbound
@@ -55,7 +61,10 @@ end
 post '/inbound' do
 
     from = params[:From]
-
+    addOnData = params[:AddOns]
+    # Sending the add on data through the web socket
+    pusher_client.trigger('twilio_channel', 'my_event', { message: addOnData })
+    # Dials the default_client
     response = Twilio::TwiML::Response.new do |r|
         # Should be your Twilio Number or a verified Caller ID
         r.Dial :callerId => from do |d|
@@ -63,85 +72,4 @@ post '/inbound' do
         end
     end
     response.text
-end
-
-post '/getname' do
-    callerId = params[:callerId]
-    name = getnamefromwhitepages(callerId, api_key)
-    return name
-end
-
-
-def getnamefromwhitepages (phone, api_key)
-
-   base_uri = "http://proapi.whitepages.com/"
-   version = "2.0/"
-
-   #the whitepagesobject will be returned with availible info.. bare minimum phone
-   whitepagesobject = {
-    :number => phone,
-    :name => phone,
-    :firstname => "",
-    :lastname => "",
-    :persontype     => "",
-    :phonetype  => "",
-    :carrier  =>  "",
-    :address  =>  "" ,
-    :city     =>  "",
-    :postal_code => "",
-    :lattitude => "",
-    :longitude=> "",
-    :state_code=> "",
-    :replevel=> "" }
-
-  request_url = base_uri + version + "phone.json?phone="+ phone  +"&api_key="+api_key
-  response = HTTParty.get(URI.escape(request_url))
-
-  result = response['results'][0] #get the first result assume it alsway a phone
-
-  if result
-    dictionarykeyphone = response['dictionary'][result]
-    whitepagesobject[:phonetype] = dictionarykeyphone['line_type']
-    whitepagesobject[:carrier]   = dictionarykeyphone['carrier']
-    whitepagesobject[:replevel]  = dictionarykeyphone['reputation']['level']
-
-    if dictionarykeyphone['belongs_to'][0]
-
-      whitepagesobject[:persontype]= dictionarykeyphone['belongs_to'][0]['id']['type']
-
-      belongstoKey = dictionarykeyphone['belongs_to'][0]['id']['key']
-      puts "belongstoKey = #{belongstoKey}"
-
-      belongstoObject = response['dictionary'][belongstoKey]  #retrieve
-      if belongstoObject
-        if whitepagesobject[:persontype] == "Person"
-          whitepagesobject[:firstname] = belongstoObject['names'][0]['first_name']  #TODO: This can error if there is no first_name
-          whitepagesobject[:lastname]  = belongstoObject['names'][0]['last_name']
-          whitepagesobject[:name] = "#{whitepagesobject[:firstname]} #{whitepagesobject[:lastname]}"
-        elsif whitepagesobject[:persontype] == "Business"
-          whitepagesobject[:name]  = belongstoObject['name']
-        end
-
-      end
-
-    end
-
-
-    locationKey = dictionarykeyphone['associated_locations'][0]['id']['key']
-    locationObject = response['dictionary'][locationKey]  #retrieve best location
-
-    if locationObject
-      whitepagesobject[:addressLine1] = locationObject['standard_address_line1']
-      whitepagesobject[:addressLine2] = locationObject['standard_address_line2']
-      whitepagesobject[:address] = "#{whitepagesobject[:addressLine1]} #{whitepagesobject[:addressLine2]}"
-      whitepagesobject[:city] = locationObject['city']
-      whitepagesobject[:state_code] = locationObject['state_code']
-      whitepagesobject[:postal_code] = locationObject['postal_code']
-      whitepagesobject[:lattitude] = locationObject['lat_long']['latitude']
-      whitepagesobject[:longitude] = locationObject['lat_long']['longitude']
-    end
-
-  end
-  return whitepagesobject.to_json
-
 end
