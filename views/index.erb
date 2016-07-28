@@ -13,6 +13,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
 
+    <script src="https://media.twiliocdn.com/sdk/js/common/v0.1/twilio-common.min.js"></script>
+    <script src="https://media.twiliocdn.com/sdk/js/sync/v0.2/twilio-sync.min.js"></script>
+
     <link href="css/client.css"
       type="text/css" rel="stylesheet" />
     <style>
@@ -20,6 +23,22 @@
     </style>
 
     <script type="text/javascript">
+
+    var accessManager = new Twilio.accessManager(token);
+    var client = new Twilio.Sync.client(accessManager);
+
+    syncClient.list("twilio_channel").then(function(list) {
+      list.on('itemAdded', function(item) {
+          console.log('index', item.index);
+          console.log('JSON data', item.value);
+      });
+    });
+
+    syncClient.list('twilio_channel').then(function(list) {
+      list.getItems().then(function(page) {
+        console.log('show first item', page.items[0]);
+      });
+    });
 
     var globalConn; //stores live connection
     // Stores the Addon Data
